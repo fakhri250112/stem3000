@@ -452,73 +452,90 @@
     });
   }
 
-  /* =========================
-     Murajaah loader — data from data/quran.json
-     ========================= */
-  function pickMurajaahThreeFromList(list){
-    const d = new Date();
-    const idx = (d.getFullYear()*10000 + (d.getMonth()+1)*100 + d.getDate()) % list.length;
-    const three = [];
-    for(let i=0;i<3;i++) three.push(list[(idx + i) % list.length]);
-    return three;
-  }
+ /* =========================
+   Murajaah loader — data from data/quran.json
+   ========================= */
+function pickMurajaahThreeFromList(list){
+  const d = new Date();
+  const idx = (d.getFullYear()*10000 + (d.getMonth()+1)*100 + d.getDate()) % list.length;
+  const three = [];
+  for(let i=0;i<3;i++) three.push(list[(idx + i) % list.length]);
+  return three;
+}
 
-  async function loadQuranJSON(){
-    try{
-      const r = await fetch('data/quran.json');
-      quranData = await r.json();
-      renderMurajaah();
-    }catch(e){
-      console.warn('Failed loading quran.json', e);
-      quranData = null;
-      murajaahBox.innerHTML = '<div class="small-muted">Quran data not loaded (data/quran.json missing)</div>';
-    }
+async function loadQuranJSON(){
+  try{
+    const r = await fetch('data/quran.json');
+    quranData = await r.json();
+    renderMurajaah();
+  }catch(e){
+    console.warn('Failed loading quran.json', e);
+    quranData = null;
+    murajaahBox.innerHTML = '<div class="small-muted">Quran data not loaded (data/quran.json missing)</div>';
   }
+}
 
-  function renderMurajaah(){
-    const todayISO = (new Date()).toISOString().slice(0,10);
-    let mem = loadJSON('murajaahToday', null);
-    if(!mem || mem.date !== todayISO){
-      const picks = quranData ? pickMurajaahThreeFromList(quranData) : ['Data missing'];
-      mem = { date: todayISO, surahs: picks.map(s => s.name || s), read: {} };
-      saveJSON('murajaahToday', mem);
-    }
-    murajaahBox.innerHTML = '';
-    mem.surahs.forEach(sName => {
-      // find object in quranData
-      const sObj = quranData ? quranData.find(x => x.name === sName) : null;
-      const box = document.createElement('div');
-      box.className = 'mini surah-box';
-      const readFlag = mem.read && mem.read[sName];
-      box.innerHTML = `<div class="flex justify-between items-start"><div><b>${sName}</b></div><div><button class="btn btn-emerald mark-surah" data-surah="${sName}">${readFlag ? 'Read' : 'Mark Read'}</button></div></div>
-        <div class="small-muted mt-2">${sObj ? sObj.translation : ''}</div>
-        <div class="small-muted mt-1" dir="rtl">${sObj ? sObj.text : '(no data)'}</div>`;
-      murajaahBox.appendChild(box);
-    });
-    document.querySelectorAll('.mark-surah').forEach(b=>{
-      b.addEventListener('click', (ev)=>{
-        const s = ev.currentTarget.dataset.surah;
-        const mem2 = loadJSON('murajaahToday', {});
-        mem2.read = mem2.read || {};
-        mem2.read[s] = true;
-        saveJSON('murajaahToday', mem2);
-        saveActivity('Murajaah', s, 0);
-        speak(`${s} tercatat dibaca`, 'id-ID');
-        renderMurajaah();
-      });
-    });
-  }
-
-  document.getElementById('markMurajaahAll').addEventListener('click', ()=>{
-    const mem = loadJSON('murajaahToday', { date:null, surahs:[], read:{} });
-    mem.surahs.forEach(s=> mem.read[s] = true );
+function renderMurajaah(){
+  const todayISO = (new Date()).toISOString().slice(0,10);
+  let mem = loadJSON('murajaahToday', null);
+  if(!mem || mem.date !== todayISO){
+    const picks = quranData ? pickMurajaahThreeFromList(quranData) : ['Data missing'];
+    mem = { date: todayISO, surahs: picks.map(s => s.name || s) };
     saveJSON('murajaahToday', mem);
-    renderMurajaah();
+  }
+  murajaahBox.innerHTML = '';
+
+  mem.surahs.forEach(sName => {
+    const sObj = quranData ? quranData.find(x => x.name === sName) : null;
+    const box = document.createElement('div');
+    box.className = 'mini surah-box';
+
+    box.innerHTML = `
+      <div class="flex justify-between items-start">
+        <div>
+          <b>${sName}</b>
+          <div class="small-muted">${sObj ? sObj.translation : ''}</div>
+        </div>
+        <div>
+          <button class="btn btn-emerald read-surah" data-surah="${sName}">Read</button>
+        </div>
+      </div>
+    `;
+
+    murajaahBox.appendChild(box);
   });
-  document.getElementById('resetMurajaah').addEventListener('click', ()=>{
-    saveJSON('murajaahToday', null);
-    renderMurajaah();
+
+  // event listener untuk tombol Read
+  document.querySelectorAll('.read-surah').forEach(btn=>{
+    btn.addEventListener('click', (ev)=>{
+      const sName = ev.currentTarget.dataset.surah;
+      const sObj = quranData.find(x => x.name === sName);
+      openQuranModal(sObj);
+    });
   });
+}
+
+/* Modal Qur’an */
+function openQuranModal(surah) {
+  document.getElementById("quranModalTitle").textContent = surah.name + " (" + surah.translation + ")";
+  
+  let contentHtml = "";
+  surah.verses.forEach((v, i) => {
+    contentHtml += `
+      <div class="border-b pb-2">
+        <p class="text-right text-lg font-arabic">${v.arabic}</p>
+        <p class="text-sm text-gray-700">${i+1}. ${v.translation}</p>
+      </div>
+    `;
+  });
+  
+  document.getElementById("quranModalContent").innerHTML = contentHtml;
+  document.getElementById("quranModal").classList.remove("hidden");
+}
+
+function closeQuranModal() {
+  document.getElementById("quranModal").classList.add("hidden");
+}
 
   /* =========================
      Weekly exercises
@@ -1080,3 +1097,4 @@
   </script>
 </body>
 </html>
+
