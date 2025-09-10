@@ -3,407 +3,136 @@
     "number": 78,
     "name": "An-Naba’",
     "translation": "Berita Besar",
-    "text": [
-      "[Ayat Arab surah An-Naba’]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah An-Naba’]"
+    "ayahs": [
+      "عَمَّ يَتَسَاءَلُونَ",
+      "عَنِ النَّبَإِ الْعَظِيمِ",
+      "الَّذِي هُمْ فِيهِ مُخْتَلِفُونَ",
+      "كَلَّا سَيَعْلَمُونَ",
+      "ثُمَّ كَلَّا سَيَعْلَمُونَ",
+      "أَلَمْ نَجْعَلِ الْأَرْضَ مِهَادًا",
+      "وَالْجِبَالَ أَوْتَادًا",
+      "وَخَلَقْنَاكُمْ أَزْوَاجًا",
+      "وَجَعَلْنَا نَوْمَكُمْ سُبَاتًا",
+      "وَجَعَلْنَا اللَّيْلَ لِبَاسًا",
+      "وَجَعَلْنَا النَّهَارَ مَعَاشًا",
+      "وَبَنَيْنَا فَوْقَكُمْ سَبْعًا شِدَادًا",
+      "وَجَعَلْنَا سِرَاجًا وَهَّاجًا",
+      "وَأَنزَلْنَا مِنَ الْمُعْصِرَاتِ مَاءً ثَجَّاجًا",
+      "لِّنُخْرِجَ بِهِ حَبًّا وَنَبَاتًا",
+      "وَجَنَّاتٍ أَلْفَافًا",
+      "إِنَّ يَوْمَ الْفَصْلِ كَانَ مِيقَاتًا",
+      "يَوْمَ يُنفَخُ فِي الصُّورِ فَتَأْتُونَ أَفْوَاجًا",
+      "وَفُتِحَتِ السَّمَاءُ فَكَانَتْ أَبْوَابًا",
+      "وَسُيِّرَتِ الْجِبَالُ فَكَانَتْ سَرَابًا",
+      "إِنَّ جَهَنَّمَ كَانَتْ مِرْصَادًا",
+      "لِّلطَّاغِينَ مَآبًا",
+      "لَّابِثِينَ فِيهَا أَحْقَابًا",
+      "لَّا يَذُوقُونَ فِيهَا بَرْدًا وَلَا شَرَابًا",
+      "إِلَّا حَمِيمًا وَغَسَّاقًا",
+      "جَزَاءً وِفَاقًا",
+      "إِنَّهُمْ كَانُوا لَا يَرْجُونَ حِسَابًا",
+      "وَكَذَّبُوا بِآيَاتِنَا كِذَّابًا",
+      "وَكُلَّ شَيْءٍ أَحْصَيْنَاهُ كِتَابًا",
+      "فَذُوقُوا فَلَن نَّزِيدَكُمْ إِلَّا عَذَابًا",
+      "إِنَّ لِلْمُتَّقِينَ مَفَازًا",
+      "حَدَائِقَ وَأَعْنَابًا",
+      "وَكَوَاعِبَ أَتْرَابًا",
+      "وَكَأْسًا دِهَاقًا",
+      "لَّا يَسْمَعُونَ فِيهَا لَغْوًا وَلَا كِذَّابًا",
+      "جَزَاءً مِّن رَّبِّكَ عَطَاءً حِسَابًا",
+      "رَّبِّ السَّمَاوَاتِ وَالْأَرْضِ وَمَا بَيْنَهُمَا الرَّحْمَٰنِ ۖ لَا يَمْلِكُونَ مِنْهُ خِطَابًا",
+      "يَوْمَ يَقُومُ الرُّوحُ وَالْمَلَائِكَةُ صَفًّا ۖ لَّا يَتَكَلَّمُونَ إِلَّا مَنْ أَذِنَ لَهُ الرَّحْمَٰنُ وَقَالَ صَوَابًا",
+      "ذَٰلِكَ الْيَوْمُ الْحَقُّ ۖ فَمَن شَاءَ اتَّخَذَ إِلَىٰ رَبِّهِ مَآبًا",
+      "إِنَّا أَنذَرْنَاكُمْ عَذَابًا قَرِيبًا يَوْمَ يَنظُرُ الْمَرْءُ مَا قَدَّمَتْ يَدَاهُ وَيَقُولُ الْكَافِرُ يَا لَيْتَنِي كُنتُ تُرَابًا"
     ]
   },
   {
     "number": 79,
-    "name": "An-Nazi‘at",
+    "name": "An-Nazi’at",
     "translation": "Malaikat yang Mencabut",
-    "text": [
-      "[Ayat Arab surah An-Nazi‘at]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah An-Nazi‘at]"
-    ]
-  },
-  {
-    "number": 80,
-    "name": "‘Abasa",
-    "translation": "Ia Bermuka Masam",
-    "text": [
-      "[Ayat Arab surah ‘Abasa]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah ‘Abasa]"
-    ]
-  },
-  {
-    "number": 81,
-    "name": "At-Takwir",
-    "translation": "Menggulung",
-    "text": [
-      "[Ayat Arab surah At-Takwir]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah At-Takwir]"
-    ]
-  },
-  {
-    "number": 82,
-    "name": "Al-Infitar",
-    "translation": "Terbelah",
-    "text": [
-      "[Ayat Arab surah Al-Infitar]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-Infitar]"
-    ]
-  },
-  {
-    "number": 83,
-    "name": "Al-Mutaffifin",
-    "translation": "Orang-orang yang Curang",
-    "text": [
-      "[Ayat Arab surah Al-Mutaffifin]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-Mutaffifin]"
-    ]
-  },
-  {
-    "number": 84,
-    "name": "Al-Insyiqaq",
-    "translation": "Terbelah",
-    "text": [
-      "[Ayat Arab surah Al-Insyiqaq]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-Insyiqaq]"
-    ]
-  },
-  {
-    "number": 85,
-    "name": "Al-Buruj",
-    "translation": "Gugusan Bintang",
-    "text": [
-      "[Ayat Arab surah Al-Buruj]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-Buruj]"
-    ]
-  },
-  {
-    "number": 86,
-    "name": "At-Tariq",
-    "translation": "Bintang yang Menyinari",
-    "text": [
-      "[Ayat Arab surah At-Tariq]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah At-Tariq]"
-    ]
-  },
-  {
-    "number": 87,
-    "name": "Al-A‘la",
-    "translation": "Yang Maha Tinggi",
-    "text": [
-      "[Ayat Arab surah Al-A‘la]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-A‘la]"
-    ]
-  },
-  {
-    "number": 88,
-    "name": "Al-Ghasyiyah",
-    "translation": "Hari Pembalasan",
-    "text": [
-      "[Ayat Arab surah Al-Ghasyiyah]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-Ghasyiyah]"
-    ]
-  },
-  {
-    "number": 89,
-    "name": "Al-Fajr",
-    "translation": "Fajar",
-    "text": [
-      "[Ayat Arab surah Al-Fajr]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-Fajr]"
-    ]
-  },
-  {
-    "number": 90,
-    "name": "Al-Balad",
-    "translation": "Negeri",
-    "text": [
-      "[Ayat Arab surah Al-Balad]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-Balad]"
-    ]
-  },
-  {
-    "number": 91,
-    "name": "Asy-Syams",
-    "translation": "Matahari",
-    "text": [
-      "[Ayat Arab surah Asy-Syams]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Asy-Syams]"
-    ]
-  },
-  {
-    "number": 92,
-    "name": "Al-Lail",
-    "translation": "Malam",
-    "text": [
-      "[Ayat Arab surah Al-Lail]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-Lail]"
-    ]
-  },
-  {
-    "number": 93,
-    "name": "Ad-Dhuha",
-    "translation": "Waktu Dhuha",
-    "text": [
-      "[Ayat Arab surah Ad-Dhuha]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Ad-Dhuha]"
-    ]
-  },
-  {
-    "number": 94,
-    "name": "Asy-Syarh",
-    "translation": "Melapangkan",
-    "text": [
-      "[Ayat Arab surah Asy-Syarh]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Asy-Syarh]"
-    ]
-  },
-  {
-    "number": 95,
-    "name": "At-Tin",
-    "translation": "Buah Tin",
-    "text": [
-      "[Ayat Arab surah At-Tin]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah At-Tin]"
-    ]
-  },
-  {
-    "number": 96,
-    "name": "Al-‘Alaq",
-    "translation": "Segumpal Darah",
-    "text": [
-      "[Ayat Arab surah Al-‘Alaq]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-‘Alaq]"
-    ]
-  },
-  {
-    "number": 97,
-    "name": "Al-Qadr",
-    "translation": "Kemuliaan",
-    "text": [
-      "[Ayat Arab surah Al-Qadr]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-Qadr]"
-    ]
-  },
-  {
-    "number": 98,
-    "name": "Al-Bayyinah",
-    "translation": "Pembuktian",
-    "text": [
-      "[Ayat Arab surah Al-Bayyinah]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-Bayyinah]"
-    ]
-  },
-  {
-    "number": 99,
-    "name": "Az-Zalzalah",
-    "translation": "Kegoncangan",
-    "text": [
-      "[Ayat Arab surah Az-Zalzalah]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Az-Zalzalah]"
-    ]
-  },
-  {
-    "number": 100,
-    "name": "Al-‘Adiyat",
-    "translation": "Berlari Kencang",
-    "text": [
-      "[Ayat Arab surah Al-‘Adiyat]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-‘Adiyat]"
-    ]
-  },
-  {
-    "number": 101,
-    "name": "Al-Qari‘ah",
-    "translation": "Hari Kiamat",
-    "text": [
-      "[Ayat Arab surah Al-Qari‘ah]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-Qari‘ah]"
-    ]
-  },
-  {
-    "number": 102,
-    "name": "At-Takathur",
-    "translation": "Bermegah-megahan",
-    "text": [
-      "[Ayat Arab surah At-Takathur]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah At-Takathur]"
-    ]
-  },
-  {
-    "number": 103,
-    "name": "Al-‘Asr",
-    "translation": "Masa",
-    "text": [
-      "[Ayat Arab surah Al-‘Asr]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-‘Asr]"
-    ]
-  },
-  {
-    "number": 104,
-    "name": "Al-Humazah",
-    "translation": "Pengumpat",
-    "text": [
-      "[Ayat Arab surah Al-Humazah]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-Humazah]"
-    ]
-  },
-  {
-    "number": 105,
-    "name": "Al-Fil",
-    "translation": "Gajah",
-    "text": [
-      "[Ayat Arab surah Al-Fil]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-Fil]"
-    ]
-  },
-  {
-    "number": 106,
-    "name": "Quraisy",
-    "translation": "Suku Quraisy",
-    "text": [
-      "[Ayat Arab surah Quraisy]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Quraisy]"
-    ]
-  },
-  {
-    "number": 107,
-    "name": "Al-Ma‘un",
-    "translation": "Barang yang Berguna",
-    "text": [
-      "[Ayat Arab surah Al-Ma‘un]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-Ma‘un]"
-    ]
-  },
-  {
-    "number": 108,
-    "name": "Al-Kausar",
-    "translation": "Nikmat yang Banyak",
-    "text": [
-      "[Ayat Arab surah Al-Kausar]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-Kausar]"
-    ]
-  },
-  {
-    "number": 109,
-    "name": "Al-Kafirun",
-    "translation": "Orang-orang Kafir",
-    "text": [
-      "[Ayat Arab surah Al-Kafirun]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-Kafirun]"
-    ]
-  },
-  {
-    "number": 110,
-    "name": "An-Nasr",
-    "translation": "Pertolongan",
-    "text": [
-      "[Ayat Arab surah An-Nasr]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah An-Nasr]"
-    ]
-  },
-  {
-    "number": 111,
-    "name": "Al-Masad",
-    "translation": "Gejolak Api",
-    "text": [
-      "[Ayat Arab surah Al-Masad]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-Masad]"
+    "ayahs": [
+      "وَالنَّازِعَاتِ غَرْقًا",
+      "وَالنَّاشِطَاتِ نَشْطًا",
+      "وَالسَّابِحَاتِ سَبْحًا",
+      "فَالسَّابِقَاتِ سَبْقًا",
+      "فَالْمُدَبِّرَاتِ أَمْرًا",
+      "يَوْمَ تَرْجُفُ الرَّاجِفَةُ",
+      "تَتْبَعُهَا الرَّادِفَةُ",
+      "قُلُوبٌ يَوْمَئِذٍ وَاجِفَةٌ",
+      "أَبْصَارُهَا خَاشِعَةٌ",
+      "يَقُولُونَ أَإِنَّا لَمَرْدُودُونَ فِي الْحَافِرَةِ",
+      "أَإِذَا كُنَّا عِظَامًا نَّخِرَةً",
+      "قَالُوا تِلْكَ إِذًا كَرَّةٌ خَاسِرَةٌ",
+      "فَإِنَّمَا هِيَ زَجْرَةٌ وَاحِدَةٌ",
+      "فَإِذَا هُم بِالسَّاهِرَةِ",
+      "هَلْ أتَاكَ حَدِيثُ مُوسَىٰ",
+      "إِذْ نَادَاهُ رَبُّهُ بِالْوَادِ الْمُقَدَّسِ طُوًى",
+      "اذْهَبْ إِلَىٰ فِرْعَوْنَ إِنَّهُ طَغَىٰ",
+      "فَقُلْ هَل لَّكَ إِلَىٰ أَن تَزَكَّىٰ",
+      "وَأَهْدِيَكَ إِلَىٰ رَبِّكَ فَتَخْشَىٰ",
+      "فَأَرَاهُ الْآيَةَ الْكُبْرَىٰ",
+      "فَكَذَّبَ وَعَصَىٰ",
+      "ثُمَّ أَدْبَرَ يَسْعَىٰ",
+      "فَحَشَرَ فَنَادَىٰ",
+      "فَقَالَ أَنَا رَبُّكُمُ الْأَعْلَىٰ",
+      "فَأَخَذَهُ اللَّهُ نَكَالَ الْآخِرَةِ وَالْأُولَىٰ",
+      "إِنَّ فِي ذَٰلِكَ لَعِبْرَةً لِّمَن يَخْشَىٰ",
+      "أَأَنتُمْ أَشَدُّ خَلْقًا أَمِ السَّمَاءُ ۚ بَنَاهَا",
+      "رَفَعَ سَمْكَهَا فَسَوَّاهَا",
+      "وَأَغْطَشَ لَيْلَهَا وَأَخْرَجَ ضُحَاهَا",
+      "وَالْأَرْضَ بَعْدَ ذَٰلِكَ دَحَاهَا",
+      "أَخْرَجَ مِنْهَا مَاءَهَا وَمَرْعَاهَا",
+      "وَالْجِبَالَ أَرْسَاهَا",
+      "مَتَاعًا لَّكُمْ وَلِأَنْعَامِكُمْ",
+      "فَإِذَا جَاءَتِ الطَّامَّةُ الْكُبْرَىٰ",
+      "يَوْمَ يَتَذَكَّرُ الْإِنسَانُ مَا سَعَىٰ",
+      "وَبُرِّزَتِ الْجَحُيمُ لِمَن يَرَىٰ",
+      "فَأَمَّا مَن طَغَىٰ",
+      "وَآثَرَ الْحَيَاةَ الدُّنْيَا",
+      "فَإِنَّ الْجَحِيمَ هِيَ الْمَأْوَىٰ",
+      "وَأَمَّا مَنْ خَافَ مَقَامَ رَبِّهِ وَنَهَى النَّفْسَ عَنِ الْهُوَىٰ",
+      "فَإِنَّ الْجَنَّةَ هِيَ الْمَأْوَىٰ",
+      "يَسْأَلُونَكَ عَنِ السَّاعَةِ أَيَّانَ مُرْسَاهَا",
+      "فِيمَ أَنتَ مِن ذِكْرَاهَا",
+      "إِلَىٰ رَبِّكَ مُنتَهَاهَا",
+      "إِنَّمَا أَنتَ مُنذِرُ مَن يَخْشَاهَا",
+      "كَأَنَّهُمْ يَوْمَ يَرَوْنَهَا لَمْ يَلْبَثُوا إِلَّا عَشِيَّةً أَوْ ضُحَاهَا"
     ]
   },
   {
     "number": 112,
     "name": "Al-Ikhlas",
     "translation": "Ikhlas",
-    "text": [
-      "[Ayat Arab surah Al-Ikhlas]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-Ikhlas]"
+    "ayahs": [
+      "قُلْ هُوَ اللَّهُ أَحَدٌ",
+      "اللَّهُ الصَّمَدُ",
+      "لَمْ يَلِدْ وَلَمْ يُولَدْ",
+      "وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ"
     ]
   },
   {
     "number": 113,
     "name": "Al-Falaq",
     "translation": "Waktu Subuh",
-    "text": [
-      "[Ayat Arab surah Al-Falaq]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah Al-Falaq]"
+    "ayahs": [
+      "قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ",
+      "مِن شَرِّ مَا خَلَقَ",
+      "وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ",
+      "وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ",
+      "وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ"
     ]
   },
   {
     "number": 114,
     "name": "An-Nas",
     "translation": "Manusia",
-    "text": [
-      "[Ayat Arab surah An-Nas]"
-    ],
-    "id_translation": [
-      "[Terjemahan ayat surah An-Nas]"
+    "ayahs": [
+      "قُلْ أَعُوذُ بِرَبِّ النَّاسِ",
+      "مَلِكِ النَّاسِ",
+      "إِلَٰهِ النَّاسِ",
+      "مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ",
+      "الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ",
+      "مِنَ الْجِنَّةِ وَ النَّاسِ"
     ]
   }
 ]
