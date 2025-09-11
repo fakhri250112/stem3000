@@ -1295,6 +1295,14 @@ if ('serviceWorker' in navigator) {
     .catch(err=> console.warn('SW failed', err));
 }
 
+// ... kode JavaScript Anda lainnya ...
+
+// Bagian ini berada di bagian paling bawah
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js')
+    .then(() => console.log('Service Worker registered'))
+    .catch(err => console.warn('SW failed', err));
+}
 </script>
 
 </body>
