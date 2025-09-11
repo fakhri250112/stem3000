@@ -1,1303 +1,1232 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sunnah Lifestyle — Full Final</title>
-
-  <!-- PWA manifest & icon -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#16a34a">
-  <link rel="icon" href="https://cdn.pixabay.com/photo/2023/11/30/10/45/allah-8421334_1280.png" type="image/png">
-
-  <!-- Tailwind CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Leaflet -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-  <style>
-    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: linear-gradient(135deg,#0f172a,#0ea5a2 60%); color:#e6eef0; min-height:100vh; }
-    .glass { background: rgba(255,255,255,0.04); backdrop-filter: blur(8px); border-radius: 16px; box-shadow: 0 6px 20px rgba(2,6,23,0.6); }
-    .mini { background: rgba(255,255,255,0.03); border-radius:12px; padding:0.75rem }
-    .small-muted { color: rgba(230,238,240,0.78); font-size:0.9rem; }
-    #map { height: 360px; border-radius:12px; }
-    .pill { background: rgba(255,255,255,0.06); padding: .25rem .6rem; border-radius:999px; font-weight:600; }
-    .btn-sm { padding:.35rem .6rem; border-radius:8px; font-weight:600; }
-    .scroll-y { max-height:220px; overflow:auto; }
-    .hidden-by-default { display:none; }
-    .history-detail { margin-top: .5rem; }
-    .muted-border { border:1px solid rgba(255,255,255,0.04); border-radius:8px; padding:.5rem; }
-    .tone { transition: box-shadow .18s ease; }
-    .tone:active { box-shadow: 0 0 0 6px rgba(255,255,255,0.03) inset; }
-    .arabic { font-family: "Scheherazade New", "Amiri", serif; font-size:1.25rem; line-height:1.6; }
-    .mlog { max-height:220px; overflow:auto; }
-    .btn { padding:.5rem .85rem; border-radius:10px; font-weight:700; }
-    .btn-ghost { background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.04); color:inherit; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunnah Lifestyle</title>
+    <meta name="description" content="A daily routine tracker inspired by Sunnah principles.">
+    <meta name="theme-color" content="#16a34a">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="manifest" href="manifest.json">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Amiri+Quran&display=swap');
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #071226;
+            color: #d1d5db;
+            line-height: 1.5;
+        }
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+        .glass {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header { text-align: center; margin-bottom: 2rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-ghost { background-color: transparent; border: 1px solid #4ade80; color: #4ade80; }
+        .btn-ghost:hover:not(:disabled) { background-color: rgba(74, 222, 128, 0.1); }
+        .btn-solid { background-color: #16a34a; color: white; border: none; }
+        .btn-solid:hover:not(:disabled) { background-color: #15803d; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .countdown { font-size: 1.5rem; font-weight: bold; color: #4ade80; }
+        #map { height: 300px; width: 100%; border-radius: 8px; }
+        .mini { font-size: 0.875rem; padding: 0.75rem; border-radius: 8px; }
+        .small-muted { font-size: 0.8rem; color: #9ca3af; }
+        .arabic { font-family: 'Amiri Quran', serif; }
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 100;
+        }
+        .modal-content {
+            background-color: #0d1e3a;
+            padding: 1.5rem;
+            border-radius: 12px;
+            width: 90%; max-width: 600px;
+            max-height: 90%; overflow-y: auto;
+        }
+        .hidden { display: none; }
+        /* Style for Leaflet buttons */
+        .leaflet-container .leaflet-control-zoom-in, .leaflet-container .leaflet-control-zoom-out {
+            background-color: #16a34a; color: white; border-radius: 4px; border: none;
+        }
+    </style>
 </head>
+<body class="p-4 sm:p-8">
 
-<body class="py-6 px-4">
-<main class="max-w-4xl mx-auto">
-
-  <header class="text-center mb-6">
-    <div class="inline-block p-3 glass">
-      <!-- Logo (kept as you requested) -->
-      <img src="https://cdn.pixabay.com/photo/2023/11/30/10/45/allah-8421334_1280.png" alt="icon" class="w-20 h-20 mx-auto rounded-full bg-white p-2" />
-      <h1 class="text-2xl font-extrabold mt-2">Sunnah Lifestyle</h1>
-      <p class="small-muted">Healthy habits • Prayer reminders • Sustainable living</p>
-    </div>
-  </header>
-
-  <!-- Dashboard grid -->
-  <section class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-
-    <!-- Left column -->
-    <div class="lg:col-span-1 space-y-4">
-
-      <!-- Time + Prayer -->
-      <div class="glass p-5 tone">
-        <div class="flex justify-between items-start">
-          <div>
-            <h2 class="text-lg font-bold">Current Time</h2>
-            <div id="currentTime" class="text-2xl mt-1 font-semibold">--:--:--</div>
-            <div id="locationDisplay" class="small-muted mt-1">Detecting location...</div>
-          </div>
-          <div class="text-right">
-            <button id="enableNotifBtn" class="mt-2 px-3 py-2 bg-emerald-400 text-black rounded-md font-semibold">Enable Notifications</button>
-            <div id="ttsToggleWrap" class="mt-2 small-muted cursor-pointer">TTS: <span id="ttsStatus">on</span></div>
-          </div>
-        </div>
-
-        <hr class="my-3 border-white/10" />
-        <h3 class="font-semibold">Next Prayer</h3>
-        <div id="nextPrayer" class="mt-2 text-lg">Loading...</div>
-        <div id="prayerCountdown" class="small-muted mt-1">—</div>
-        <ul id="prayerList" class="mt-3 space-y-1 small-muted"></ul>
-      </div>
-
-      <!-- Meals -->
-      <div class="glass p-5 tone">
-        <h3 class="text-lg font-bold">Meals (fixed per day)</h3>
-        <p class="small-muted">Menu is fixed for the day — changes at midnight</p>
-        <div class="mt-3 space-y-2">
-          <div class="mini flex justify-between items-center">
-            <div><b>Breakfast</b><div class="small-muted">07:00</div></div>
-            <div class="text-right">
-              <div id="breakfastCountdown" class="font-medium">—</div>
-              <div id="breakfastMenu" class="small-muted">Loading menu...</div>
-            </div>
-          </div>
-          <div class="mini flex justify-between items-center">
-            <div><b>Lunch</b><div class="small-muted">12:00</div></div>
-            <div class="text-right">
-              <div id="lunchCountdown" class="font-medium">—</div>
-              <div id="lunchMenu" class="small-muted">Loading menu...</div>
-            </div>
-          </div>
-          <div class="mini flex justify-between items-center">
-            <div><b>Dinner</b><div class="small-muted">19:00</div></div>
-            <div class="text-right">
-              <div id="dinnerCountdown" class="font-medium">—</div>
-              <div id="dinnerMenu" class="small-muted">Loading menu...</div>
-            </div>
-          </div>
-        </div>
-        <div class="mt-3 flex gap-2">
-          <!-- Mark buttons: user must click to record meal -->
-          <button id="markBreakfast" class="btn btn-ghost">Mark Breakfast</button>
-          <button id="markLunch" class="btn btn-ghost">Mark Lunch</button>
-          <button id="markDinner" class="btn btn-ghost">Mark Dinner</button>
-        </div>
-      </div>
-
-      <!-- Sleep + Fast toggles -->
-      <div class="glass p-5 tone">
-        <div class="flex justify-between items-center">
-          <h3 class="text-lg font-bold">Sleep</h3>
-          <div class="pill">22:00</div>
-        </div>
-        <div class="mt-3 small-muted">Recommended sleep start</div>
-        <div class="mt-3">
-          <div id="sleepCountdown" class="font-medium">—</div>
-        </div>
-
-        <hr class="my-3 border-white/8" />
-
-        <div class="flex items-center gap-2">
-          <input type="checkbox" id="fastingMode" />
-          <label for="fastingMode" class="small-muted">Ramadan Mode (auto) / Imsak & Iftar</label>
-        </div>
-        <div class="flex items-center gap-2 mt-2">
-          <input type="checkbox" id="sunnahMonThu" checked />
-          <label for="sunnahMonThu" class="small-muted">Sunnah Mon & Thu fasting reminders</label>
-        </div>
-
-        <div class="mt-3 small-muted" id="fastingStatus">Fasting: Off</div>
-        <div class="mt-2" id="fastingCountdown">—</div>
-      </div>
-
+    <div class="header">
+        <img src="https://cdn.pixabay.com/photo/2023/11/30/10/45/allah-8421334_1280.png" alt="Allah logo" class="w-12 mx-auto mb-2">
+        <h1 class="text-3xl font-bold text-white">Sunnah Lifestyle</h1>
+        <p class="small-muted">Healthy habits • Prayer reminders • Sustainable living</p>
     </div>
 
-    <!-- Middle & right -->
-    <div class="lg:col-span-2 space-y-4">
-
-      <!-- Activity Tracker -->
-      <div class="glass p-5 tone">
-        <div class="flex justify-between items-center">
-          <h3 class="text-lg font-bold">Activity Tracker (GPS)</h3>
-          <div class="small-muted">Record runs/walks, view on map</div>
+    <div class="grid">
+        <div class="glass p-5">
+            <h2 class="text-xl font-bold mb-4">Current Time</h2>
+            <div id="currentTime" class="text-4xl font-bold text-emerald-400 mb-2"></div>
+            <div class="small-muted">
+                <span id="locationDisplay"></span>
+                <span id="ttsStatus"></span>
+                <button id="toggleTts" class="underline ml-2">TTS: on</button>
+            </div>
+            <div class="small-muted mt-2">
+                <button id="enableNotifications" class="underline">Enable Notifications</button>
+            </div>
         </div>
 
-        <div class="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div id="map" class="md:col-span-2"></div>
-          <div class="space-y-2">
-            <div class="mini">
-              <div class="small-muted">Status</div>
-              <div id="trackStatus">Idle</div>
-            </div>
-            <div class="mini">
-              <div class="small-muted">Distance</div>
-              <div id="trackDistance">0.00 km</div>
-            </div>
-            <div class="mini">
-              <div class="small-muted">Elapsed</div>
-              <div id="trackElapsed">00:00:00</div>
-            </div>
-
-            <div class="mt-2 space-y-1">
-              <button id="startTrack" class="w-full bg-emerald-400 text-black py-2 rounded-md font-semibold">Start</button>
-              <button id="pauseTrack" class="w-full bg-yellow-400 text-black py-2 rounded-md font-semibold">Pause</button>
-              <button id="stopTrack" class="w-full bg-red-500 text-white py-2 rounded-md font-semibold">Stop & Save</button>
-            </div>
-          </div>
+        <div class="glass p-5">
+            <h2 class="text-xl font-bold mb-4">Next Prayer</h2>
+            <div id="nextPrayer" class="text-2xl font-bold text-emerald-400"></div>
+            <div id="prayerCountdown" class="text-lg mt-2"></div>
+            <div id="prayerList" class="mt-4 space-y-2"></div>
         </div>
 
-        <div class="mt-4">
-          <div class="flex items-center justify-between mb-2">
-            <h4 class="font-semibold">Saved Runs</h4>
-            <div class="flex gap-2">
-              <button id="exportAllRunsBtn" class="btn-sm bg-white/6">Export All Runs</button>
-              <button id="clearRunsBtn" class="btn-sm bg-white/6">Clear All Runs</button>
+        <div class="glass p-5">
+            <h2 class="text-xl font-bold mb-4">Meals (fixed)</h2>
+            <p class="small-muted">Keep regular meals — can only mark at meal times</p>
+            <div class="space-y-4 mt-4">
+                <div class="mini glass flex justify-between items-center">
+                    <div>
+                        <b>Breakfast</b>
+                        <div class="small-muted">07:00</div>
+                        <div id="breakfastMenu" class="small-muted"></div>
+                    </div>
+                    <div class="text-right">
+                        <div id="breakfastCountdown" class="countdown"></div>
+                        <button id="markBreakfast" class="btn btn-solid mt-1">Mark</button>
+                    </div>
+                </div>
+                <div class="mini glass flex justify-between items-center">
+                    <div>
+                        <b>Lunch</b>
+                        <div class="small-muted">12:00</div>
+                        <div id="lunchMenu" class="small-muted"></div>
+                    </div>
+                    <div class="text-right">
+                        <div id="lunchCountdown" class="countdown"></div>
+                        <button id="markLunch" class="btn btn-solid mt-1">Mark</button>
+                    </div>
+                </div>
+                <div class="mini glass flex justify-between items-center">
+                    <div>
+                        <b>Dinner</b>
+                        <div class="small-muted">19:00</div>
+                        <div id="dinnerMenu" class="small-muted"></div>
+                    </div>
+                    <div class="text-right">
+                        <div id="dinnerCountdown" class="countdown"></div>
+                        <button id="markDinner" class="btn btn-solid mt-1">Mark</button>
+                    </div>
+                </div>
             </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div class="mini scroll-y" id="runsListWrap"></div>
-            <div class="mini">
-              <div class="small-muted">Selected Run</div>
-              <div id="runDetail" class="mt-2 small-muted">No run selected</div>
-              <div class="mt-3 flex gap-2">
-                <button id="viewRunOnMapBtn" class="btn-sm bg-emerald-400">View on Map</button>
-                <button id="deleteRunBtn" class="btn-sm bg-red-600 text-white">Delete</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Trash + Eco Challenges -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-        <!-- Trash -->
-        <div class="glass p-5 tone">
-          <h3 class="text-lg font-bold">♻ Trash Taken</h3>
-          <div class="small-muted">Log daily trash (grams)</div>
-
-          <div class="mt-3 space-y-2">
-            <input id="trashType" placeholder="Type (Plastic / Organic)" class="w-full p-2 rounded bg-white/5" />
-            <input id="trashWeight" placeholder="Weight (grams)" type="number" class="w-full p-2 rounded bg-white/5" />
-            <div class="flex gap-2">
-              <button id="addTrashBtn" class="flex-1 bg-emerald-400 text-black py-2 rounded-md font-semibold">Add</button>
-              <button id="clearTrashBtn" class="bg-white/6 text-white py-2 px-3 rounded-md">Clear Today</button>
-            </div>
-            <div class="mt-3 small-muted">Today log</div>
-            <ul id="trashList" class="mt-2 small-muted space-y-1 max-h-40 overflow-auto"></ul>
-            <div class="mt-2 font-semibold" id="trashTotal">Total: 0 g</div>
-          </div>
         </div>
 
-        <!-- Eco Challenges -->
-        <div class="glass p-5 tone">
-          <h3 class="text-lg font-bold">🌱 Eco-Challenges</h3>
-          <div class="small-muted">Complete tasks to earn eco points</div>
-          <ul class="mt-3 space-y-2" id="challengeList"></ul>
-          <div class="mt-3 small-muted">Points: <span id="ecoPoints">0</span></div>
-          <div class="mt-3 small-muted">Note: Completed challenges are recorded in the unified History (📜)</div>
+        <div class="glass p-5">
+            <h2 class="text-xl font-bold mb-4">Exercises</h2>
+            <p class="small-muted">Check if you've done them</p>
+            <div id="exerciseList" class="space-y-3 mt-4"></div>
         </div>
 
-      </div>
+        <div class="glass p-5">
+            <h2 class="text-xl font-bold mb-4">Murajaah (Quran Review)</h2>
+            <p class="small-muted">Recite today's recommended surahs</p>
+            <div id="murajaahBox" class="mt-4 space-y-3"></div>
+        </div>
 
+        <div class="glass p-5">
+            <h2 class="text-xl font-bold mb-4">Sleep & Fasting</h2>
+            <div class="flex justify-between items-center mb-4">
+                <div><b>Sleep</b><div class="small-muted">Recommended sleep start</div></div>
+                <div id="sleepCountdown" class="countdown"></div>
+            </div>
+            <div class="flex justify-between items-center">
+                <div><b>Fasting</b><div class="small-muted" id="fastingCountdown">No fasting reminders today</div></div>
+            </div>
+        </div>
+        
+        <div class="glass p-5">
+            <h2 class="text-xl font-bold mb-2">Daily Streak</h2>
+            <p class="small-muted mb-4">Complete all daily tasks to earn a streak!</p>
+            <div class="flex justify-between items-center text-4xl font-bold text-white">
+                <div>🔥 Streak: <span id="streakCount">0</span></div>
+            </div>
+            <div class="small-muted mt-4">
+                Restore tokens this month: <span id="streakRestore">3</span>
+            </div>
+        </div>
+
+        <div class="glass p-5 col-span-1 md:col-span-2">
+            <h2 class="text-xl font-bold mb-4">Activity Tracker (GPS)</h2>
+            <p class="small-muted mb-2">Record runs/walks, view on map</p>
+            <div id="map" class="w-full h-80 mb-4"></div>
+            <div class="flex justify-between items-center mb-4">
+                <div class="text-center">
+                    <div class="small-muted">Status</div>
+                    <div id="trackStatus" class="font-bold">Idle</div>
+                </div>
+                <div class="text-center">
+                    <div class="small-muted">Distance</div>
+                    <div id="trackDistance" class="font-bold">0.00 km</div>
+                </div>
+                <div class="text-center">
+                    <div class="small-muted">Elapsed</div>
+                    <div id="trackElapsed" class="font-bold">00:00:00</div>
+                </div>
+                <div class="text-center">
+                    <div class="small-muted">Pace</div>
+                    <div id="trackPace" class="font-bold">0'00'' /km</div>
+                </div>
+            </div>
+            <div class="flex justify-around gap-2">
+                <button id="startTrack" class="btn btn-solid flex-1">Start</button>
+                <button id="pauseTrack" class="btn btn-ghost flex-1">Pause</button>
+                <button id="stopTrack" class="btn btn-solid flex-1">Stop & Save</button>
+            </div>
+            
+            <div class="mt-6">
+                <h3 class="text-lg font-bold">Saved Runs</h3>
+                <div class="flex justify-between items-center small-muted mb-2">
+                    <span id="runDetail">No run selected</span>
+                    <div class="flex gap-2">
+                         <button id="viewRunOnMapBtn" class="btn btn-ghost">View on Map</button>
+                         <button id="deleteRunBtn" class="btn btn-ghost">Delete</button>
+                    </div>
+                </div>
+                <div class="max-h-48 overflow-y-auto pr-2" id="runsListWrap"></div>
+                <div class="flex gap-2 mt-4">
+                    <button id="clearRunsBtn" class="btn btn-ghost text-red-400">Clear All Runs</button>
+                    <button id="exportAllRunsBtn" class="btn btn-ghost">Export All Runs</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass p-5">
+            <h2 class="text-xl font-bold mb-4">Trash Tracker</h2>
+            <p class="small-muted mb-2">Log daily trash (grams)</p>
+            <input type="text" id="trashType" placeholder="Type (Plastic / Organic)" class="w-full p-2 rounded bg-white/10 text-white border border-white/20 mb-2">
+            <input type="number" id="trashWeight" placeholder="Weight (grams)" class="w-full p-2 rounded bg-white/10 text-white border border-white/20 mb-2">
+            <button id="addTrashBtn" class="btn btn-solid w-full">Add</button>
+            <div class="mt-4">
+                <h3 class="text-lg font-bold mb-2">Today's Log</h3>
+                <ul id="trashList" class="list-disc ml-4 space-y-1 small-muted"></ul>
+                <div id="trashTotal" class="mt-2 font-bold"></div>
+                <button id="clearTrashBtn" class="btn btn-ghost text-red-400 mt-2">Clear Today</button>
+            </div>
+        </div>
+
+        <div class="glass p-5">
+            <h2 class="text-xl font-bold mb-4">Eco-Challenges</h2>
+            <p class="small-muted">Complete tasks to earn eco points</p>
+            <div class="mt-4">
+                <ul id="challengeList" class="space-y-3"></ul>
+            </div>
+            <div class="mt-4 text-xl font-bold">
+                Points: <span id="ecoPoints">0</span>
+            </div>
+        </div>
     </div>
 
-  </section>
-
-  <!-- Unified History toggle -->
-  <div class="text-center mb-4">
-    <button id="toggleHistoryBtn" class="px-4 py-2 bg-yellow-600 text-black rounded-lg font-semibold">📜 History (Previous Days)</button>
-  </div>
-
-  <!-- History section (hidden by default) -->
-  <section id="historySection" class="glass p-5 mb-6 hidden-by-default" style="display:none;">
-    <h3 class="text-lg font-bold mb-2">📜 History (Previous Days)</h3>
-    <div id="historyList" class="space-y-3 small-muted"></div>
-    <div class="mt-3 small-muted">*Click a date to expand details*</div>
-  </section>
-
-  <footer class="text-center small-muted">App Developed by Fakhri - Project Developed by Group 3</footer>
-</main>
-
-<!-- Quran Modal -->
-<div id="quranModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-  <div class="bg-white text-gray-900 max-w-3xl w-full rounded-xl p-6 overflow-y-auto max-h-[80vh]">
-    <div class="flex justify-between items-start mb-4">
-      <h3 id="quranModalTitle" class="text-xl font-bold"></h3>
-      <div class="flex items-center gap-2">
-        <button id="prevSurah" class="btn btn-ghost" disabled>Prev</button>
-        <button id="nextSurah" class="btn btn-ghost">Next</button>
-        <button id="closeQuranModal" class="btn btn-ghost">Close</button>
-      </div>
+    <div class="text-center mt-8">
+        <button id="toggleHistoryBtn" class="btn btn-ghost px-8 py-2">History (Previous Days)</button>
     </div>
-    <div id="quranModalContent" class="mt-4 arabic"></div>
-  </div>
-</div>
 
-<script>
-/* ======================================================
-   FULL APP JS
-   - Language: English-only
-   - IMPORTANT: scheduled/planned events are reminders only
-     and DO NOT auto-log to history. History logs only on
-     explicit user actions (clicks/checks/opening surah/etc).
-   ====================================================== */
+    <div id="historySection" class="mt-4 p-5 glass hidden">
+        <h2 class="text-xl font-bold mb-4">Activity History</h2>
+        <div id="historyList" class="space-y-4"></div>
+    </div>
 
-/* ---------------------------
-   Utilities & Storage helpers
-   --------------------------- */
-function saveJSON(key, value) {
-  if (value === null) localStorage.removeItem(key);
-  else localStorage.setItem(key, JSON.stringify(value));
-}
-function loadJSON(key, fallback) {
-  try {
-    const v = localStorage.getItem(key);
-    return v ? JSON.parse(v) : (typeof fallback === 'function' ? fallback() : fallback);
-  } catch (e) { return fallback; }
-}
-function pad(n){ return (n<10? '0':'') + n; }
-
-/* Clock */
-const nowEl = document.getElementById('currentTime');
-function updateClock(){ nowEl.textContent = new Date().toLocaleTimeString(); }
-setInterval(updateClock, 1000); updateClock();
-
-/* ===========
-   TTS & Voice
-   =========== */
-let ttsEnabled = true;
-let userLang = navigator.language || 'en-US';
-const ttsStatusEl = document.getElementById('ttsStatus');
-let preferredVoice = null;
-function loadVoices() {
-  const voices = window.speechSynthesis.getVoices() || [];
-  preferredVoice = voices.find(v => v.lang && v.lang.startsWith('en')) || voices[0] || null;
-}
-if ('speechSynthesis' in window) {
-  loadVoices();
-  window.speechSynthesis.onvoiceschanged = () => loadVoices();
-}
-function speak(text, lang=null){
-  if(!ttsEnabled || !('speechSynthesis' in window)) return;
-  try {
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = lang || userLang || 'en-US';
-    if(preferredVoice) utter.voice = preferredVoice;
-    utter.rate = 1; utter.pitch = 1;
-    try{ speechSynthesis.cancel(); }catch(e){}
-    speechSynthesis.speak(utter);
-  } catch(e){ console.warn('TTS error', e); }
-}
-document.getElementById('ttsToggleWrap').addEventListener('click', ()=>{
-  ttsEnabled = !ttsEnabled;
-  ttsStatusEl.textContent = ttsEnabled ? 'on' : 'off';
-  speak(ttsEnabled ? 'Text to speech enabled' : 'Text to speech disabled', 'en-US');
-});
-
-/* Notifications */
-let notificationsEnabled = (localStorage.getItem('notifEnabled') === 'true');
-const enableNotifBtn = document.getElementById('enableNotifBtn');
-function updateNotifUI(){
-  if(localStorage.getItem('notifEnabled') === 'true') enableNotifBtn.textContent = 'Notifications Enabled';
-  else enableNotifBtn.textContent = 'Enable Notifications';
-}
-updateNotifUI();
-enableNotifBtn.addEventListener('click', async ()=>{
-  if(!('Notification' in window)){ alert('This browser does not support notifications.'); return; }
-  try {
-    const p = await Notification.requestPermission();
-    notificationsEnabled = (p === 'granted');
-    localStorage.setItem('notifEnabled', notificationsEnabled ? 'true' : 'false');
-    updateNotifUI();
-    if(notificationsEnabled) new Notification('Notifications enabled for Sunnah Lifestyle');
-  } catch(e){ console.warn('Notification permission error', e); }
-});
-function showNotification(title, body=''){ if(localStorage.getItem('notifEnabled') === 'true'){ try{ new Notification(title,{body}); }catch(e){ console.warn(e); } } }
-
-/* ==============
-   Quotes (daily)
-   ============== */
-const quotes = [
-  { text: "Indeed, actions are judged by intentions.", source: "Hadith (Bukhari & Muslim)" },
-  { text: "Your smile for your brother is charity.", source: "Hadith (Tirmidhi)" },
-  { text: "Indeed, with hardship comes ease.", source: "Quran (Al-Inshirah: 5)" },
-  { text: "Whoever relieves a believer's distress, Allah will relieve his distress.", source: "Hadith (Muslim)" },
-  { text: "And upon Allah rely the believers.", source: "Quran (At-Tawbah: 51)" },
-  { text: "The deeds most loved by Allah are those done consistently.", source: "Hadith (Bukhari)" },
-  { text: "Allah does not burden a soul beyond that it can bear.", source: "Quran (Al-Baqarah: 286)" }
-];
-function setDailyQuote(){
-  const d = new Date();
-  const idx = (d.getFullYear()*10000 + (d.getMonth()+1)*100 + d.getDate()) % quotes.length;
-  document.getElementById('quoteBox') && (document.getElementById('quoteBox').innerHTML = `“${quotes[idx].text}”<br><span class="small-muted">${quotes[idx].source}</span>`);
-}
-setDailyQuote();
-
-/* =========================
-   Prayer times (Aladhan)
-   ========================= */
-let prayerTimings = {};
-let hijriInfo = null;
-
-async function fetchPrayerTimes(lat, lon){
-  try {
-    const timestamp = Math.floor(Date.now()/1000);
-    const url = `https://api.aladhan.com/v1/timings/${timestamp}?latitude=${lat}&longitude=${lon}&method=2`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if(data && data.data && data.data.timings){
-      const raw = data.data.timings;
-      const sanitized = {};
-      ['Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'].forEach(k=>{
-        if(raw[k]){
-          const m = String(raw[k]).match(/(\d{1,2}:\d{2})/);
-          sanitized[k] = m ? m[1] : raw[k];
-        }
-      });
-      prayerTimings = sanitized;
-      hijriInfo = (data.data.date && data.data.date.hijri) ? data.data.date.hijri : null;
-      renderPrayerList();
-      buildDailySchedule();
-    } else throw new Error('Invalid API data');
-  } catch(e){
-    console.warn('Aladhan fetch failed, using fallback times', e);
-    prayerTimings = { Fajr:'05:00', Dhuhr:'12:00', Asr:'15:00', Maghrib:'18:00', Isha:'20:00' };
-    renderPrayerList();
-    buildDailySchedule();
-  }
-}
-
-function renderPrayerList(){
-  const list = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
-  const ul = document.getElementById('prayerList');
-  if(!ul) return;
-  ul.innerHTML = list.map(p => `<li class="mini flex justify-between items-center"><div><b>${p}</b><div class="small-muted">${prayerTimings[p] || '—'}</div></div><div><input type="checkbox" class="prayer-check" data-prayer="${p}" id="chk-${p}" /></div></li>`).join('');
-  attachPrayerListeners();
-  document.getElementById('nextPrayer').textContent = computeNextPrayerText();
-}
-
-/* Attach user-initiated prayer checkbox listeners:
-   - Only user-driven interactions (ev.isTrusted) will save activity
-*/
-function attachPrayerListeners(){
-  document.querySelectorAll('.prayer-check').forEach(chk=>{
-    // set current state from daily summary
-    const p = chk.dataset.prayer;
-    const today = isoKey();
-    const daily = loadDailySummary()[today] || {};
-    chk.checked = !!(daily.prayerDone && daily.prayerDone[p]);
-
-    // add change listener
-    chk.removeEventListener('change', prayerCheckHandler);
-    chk.addEventListener('change', prayerCheckHandler);
-  });
-}
-function prayerCheckHandler(ev){
-  const chk = ev.currentTarget;
-  if(!ev.isTrusted) return; // ignore programmatic changes
-  const p = chk.dataset.prayer;
-  const checked = chk.checked;
-  const store = loadDailySummary();
-  const today = isoKey();
-  if(!store[today]) store[today] = { dateLabel: labelFromDate(new Date()), trash:{ total:0, breakdown:{} }, ecoPoints:0, activities:[], meals:{}, prayerDone:{}, exerciseDone:{}, murajaahDone:{} };
-  store[today].prayerDone = store[today].prayerDone || {};
-  store[today].prayerDone[p] = checked;
-  localStorage.setItem('dailySummary', JSON.stringify(store));
-  if(checked) {
-    saveActivity('Prayer', `${p} prayer`, 0, { allowDuplicateWindowSeconds: 60 });
-    speak(`${p} recorded`, 'en-US');
-  } else {
-    speak(`${p} unchecked`, 'en-US');
-  }
-  renderHistoryListIfOpen();
-}
-
-/* helpers */
-function timeToTodayDate(hhmm){
-  const [hh,mm] = (hhmm||'00:00').split(':').map(Number);
-  const d = new Date(); d.setHours(hh,mm,0,0); return d;
-}
-function computeNextPrayerText(){
-  const now = new Date();
-  const order = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
-  for(const p of order){
-    if(prayerTimings[p]){
-      const t = timeToTodayDate(prayerTimings[p]);
-      if(t > now) return `${p} ${prayerTimings[p]}`;
-    }
-  }
-  const t = prayerTimings['Fajr'] ? prayerTimings['Fajr'] : '05:00';
-  return `Fajr ${t} (tomorrow)`;
-}
-
-/* =========================
-   Menus (daily fixed) & midnight rotation
-   ========================= */
-function todayMenusKey(){
-  const d = new Date(); return `menus-${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-}
-const defaultMenus = {
-  breakfast: "Dates & milk — Prophet’s breakfast",
-  lunch: "Brown rice & grilled chicken — balanced",
-  dinner: "Light vegetable soup & fruit — easy digestion"
-};
-function loadMenusForToday(){
-  let menus = JSON.parse(localStorage.getItem(todayMenusKey()) || 'null');
-  if(!menus){
-    menus = {...defaultMenus};
-    localStorage.setItem(todayMenusKey(), JSON.stringify(menus));
-  }
-  if(document.getElementById('breakfastMenu')) document.getElementById('breakfastMenu').textContent = menus.breakfast;
-  if(document.getElementById('lunchMenu')) document.getElementById('lunchMenu').textContent = menus.lunch;
-  if(document.getElementById('dinnerMenu')) document.getElementById('dinnerMenu').textContent = menus.dinner;
-}
-loadMenusForToday();
-
-/* =========================
-   Scheduler & reminders
-   - IMPORTANT: scheduled events only send reminders (TTS/notification),
-     they DO NOT auto-save to history.
-   ========================= */
-let scheduledEvents = [];
-let triggeredIds = new Set();
-function scheduleEvent(id, name, date, category, data = {}){ if(!date || isNaN(date.getTime())) return; scheduledEvents.push({ id, name, date, category, data }); }
-
-const defaultExercises = [
-  {id: 'stretch', name: 'Morning Stretch', time: '06:30'},
-  {id: 'cardio', name: 'Cardio Workout', time: '16:30'},
-  {id: 'workout', name: 'Light Weight Training', time: '20:30'}
-];
-
-function buildDailySchedule(){
-  scheduledEvents = []; triggeredIds = new Set();
-  ['Fajr','Dhuhr','Asr','Maghrib','Isha'].forEach(p=>{
-    if(prayerTimings[p]) scheduleEvent(`prayer-${p}`, `Prayer: ${p}`, timeToTodayDate(prayerTimings[p]), 'prayer', { prayer: p });
-  });
-
-  const menus = JSON.parse(localStorage.getItem(todayMenusKey()) || 'null') || defaultMenus;
-  scheduleEvent('meal-breakfast','Breakfast', timeToTodayDate('07:00'), 'meal', { menu: menus.breakfast, meal:'Breakfast' });
-  scheduleEvent('meal-lunch','Lunch', timeToTodayDate('12:00'), 'meal', { menu: menus.lunch, meal:'Lunch' });
-  scheduleEvent('meal-dinner','Dinner', timeToTodayDate('19:00'), 'meal', { menu: menus.dinner, meal:'Dinner' });
-
-  const exercises = JSON.parse(localStorage.getItem('todayExercises') || 'null') || defaultExercises;
-  exercises.forEach(ex => {
-    scheduleEvent(`ex-${ex.id}`, ex.name, timeToTodayDate(ex.time), 'exercise', { name: ex.name, time: ex.time });
-  });
-
-  scheduleEvent('sleep','Sleep time', timeToTodayDate('22:00'), 'sleep', {});
-  evaluateFastingMode();
-  scheduledEvents.sort((a,b)=>a.date - b.date);
-  // Render exercise list after schedule built
-  renderExerciseList();
-}
-
-/* Evaluate fasting toggles, maybe add imsak/iftar reminders (still reminders only) */
-function evaluateFastingMode(){
-  const fastingToggle = document.getElementById('fastingMode');
-  let ramadanDetected = false;
-  if(hijriInfo && hijriInfo.month && hijriInfo.month.number) ramadanDetected = (hijriInfo.month.number === 9);
-  if(ramadanDetected) fastingToggle.checked = true;
-  const sunnahToggle = document.getElementById('sunnahMonThu');
-  const weekday = new Date().getDay();
-  const fastOn = fastingToggle.checked;
-  const sunnahOn = sunnahToggle.checked && (weekday === 1 || weekday === 4);
-  document.getElementById('fastingStatus').textContent = fastOn ? 'Fasting Mode: On (Ramadan or manual)' : 'Fasting Mode: Off';
-  scheduledEvents = scheduledEvents.filter(e => !String(e.id).startsWith('fast-'));
-  if(fastOn || sunnahOn || ramadanDetected){
-    if(prayerTimings['Fajr']){
-      const fajrDate = timeToTodayDate(prayerTimings['Fajr']);
-      scheduleEvent('fast-imsak','Imsak (stop eating)', new Date(fajrDate.getTime() - 10*60000), 'fast', { type:'imsak' });
-    }
-    if(prayerTimings['Maghrib']){
-      const magh = timeToTodayDate(prayerTimings['Maghrib']);
-      scheduleEvent('fast-iftar','Iftar (break fast)', magh, 'fast', { type:'iftar' });
-    }
-  }
-}
-
-/* Countdown + trigger loop (reminders only) */
-function msToFriendly(ms){
-  if(ms <= 0) return 'Now';
-  const s = Math.floor(ms/1000) % 60;
-  const m = Math.floor(ms/60000) % 60;
-  const h = Math.floor(ms/3600000);
-  if(h>0) return `${h}h ${m}m ${s}s`;
-  if(m>0) return `${m}m ${s}s`;
-  return `${s}s`;
-}
-function updateCountdownsAndTriggers(){
-  const now = new Date();
-  const breakfastEvent = scheduledEvents.find(e=>e.id==='meal-breakfast');
-  const lunchEvent = scheduledEvents.find(e=>e.id==='meal-lunch');
-  const dinnerEvent = scheduledEvents.find(e=>e.id==='meal-dinner');
-  document.getElementById('breakfastCountdown').textContent = breakfastEvent ? msToFriendly(breakfastEvent.date - now) : '—';
-  document.getElementById('lunchCountdown').textContent = lunchEvent ? msToFriendly(lunchEvent.date - now) : '—';
-  document.getElementById('dinnerCountdown').textContent = dinnerEvent ? msToFriendly(dinnerEvent.date - now) : '—';
-
-  const sleepEv = scheduledEvents.find(e=>e.id==='sleep');
-  if(document.getElementById('sleepCountdown')) document.getElementById('sleepCountdown').textContent = sleepEv ? msToFriendly(sleepEv.date - now) : '—';
-  const fastEv = scheduledEvents.find(e=>e.category==='fast' && e.date>now);
-  if(document.getElementById('fastingCountdown')) document.getElementById('fastingCountdown').textContent = fastEv ? `${fastEv.name} in ${msToFriendly(fastEv.date - now)}` : 'No fasting reminders today';
-
-  function isInWindow(ev, before=60, after=240){
-    const now = new Date();
-    const start = new Date(ev.date.getTime() - before*60000);
-    const end = new Date(ev.date.getTime() + after*60000);
-    return now >= start && now <= end;
-  }
-
-  // enable/disable prayer checkboxes based on window and set their checked state from dailySummary
-  document.querySelectorAll('.prayer-check').forEach(chk=>{
-    const p = chk.dataset.prayer;
-    const ev = scheduledEvents.find(e=>e.category==='prayer' && e.data.prayer === p);
-    if(!ev) { chk.disabled = true; return; }
-    chk.disabled = !isInWindow(ev, 30, 180);
-    const today = isoKey();
-    const daily = loadDailySummary()[today] || { activities: [], prayerDone: {} };
-    chk.checked = !!(daily.prayerDone && daily.prayerDone[p]);
-  });
-
-  // meals buttons enable/disable
-  [['meal-breakfast','markBreakfast'], ['meal-lunch','markLunch'], ['meal-dinner','markDinner']].forEach(pair=>{
-    const ev = scheduledEvents.find(e=>e.id===pair[0]);
-    const btn = document.getElementById(pair[1]);
-    if(!btn || !ev) return;
-    btn.disabled = !isInWindow(ev, 30, 180);
-    const today = isoKey();
-    const ds = loadDailySummary()[today] || {};
-    const mealsDone = ds.meals || {};
-    btn.classList.toggle('bg-emerald-400', !!mealsDone[`meal-${ev.data.meal.toLowerCase()}`]);
-  });
-
-  // exercise checkboxes set state (they will save only when user checks)
-  document.querySelectorAll('.exercise-check').forEach(chk=>{
-    const exName = chk.dataset.exercise;
-    const ev = scheduledEvents.find(e=>e.category==='exercise' && e.data.name === exName);
-    if(!ev) { chk.disabled = true; return; }
-    chk.disabled = !isInWindow(ev, 30, 120);
-    const today = isoKey();
-    const daily = loadDailySummary()[today] || { exerciseDone: {} };
-    chk.checked = !!(daily.exerciseDone && daily.exerciseDone[exName]);
-  });
-
-  // reminders (TTS + notification) only — DO NOT auto-save to history
-  scheduledEvents.forEach(ev=>{
-    const remaining = ev.date - now;
-    const key = `${ev.id}|${isoKey(ev.date)}`;
-    if(remaining <= 0 && !triggeredIds.has(key)) {
-      triggeredIds.add(key);
-      handleEventReminder(ev);
-    }
-  });
-}
-setInterval(updateCountdownsAndTriggers, 1000);
-
-/* handle reminders (no auto-log) */
-function handleEventReminder(ev){
-  try {
-    switch(ev.category){
-      case 'prayer':
-        speak(`It is time for ${ev.data.prayer} prayer.`, 'en-US');
-        showNotification('Prayer Reminder', `Time for ${ev.data.prayer} prayer`);
-        break;
-      case 'meal':
-        speak(`Time for ${ev.data.meal}. Today's menu is: ${ev.data.menu}`, 'en-US');
-        showNotification('Meal Reminder', `Time for ${ev.data.meal}`);
-        break;
-      case 'exercise':
-        speak(`Time to exercise: ${ev.name}`, 'en-US');
-        showNotification('Exercise Reminder', ev.name);
-        break;
-      case 'sleep':
-        speak('Time to sleep. Good night.', 'en-US');
-        showNotification('Sleep Reminder', 'Time to sleep');
-        break;
-      case 'fast':
-        if(ev.data.type === 'imsak'){
-          speak('Imsak. Stop eating now.', 'en-US');
-          showNotification('Imsak', 'Stop eating now');
-        } else if(ev.data.type === 'iftar'){
-          speak('It is time to break your fast (Iftar).', 'en-US');
-          showNotification('Iftar', 'Time to break your fast');
-        }
-        break;
-    }
-  } catch(e){ console.warn('handleEventReminder error', e); }
-}
-
-/* =========================
-   Meals marking (user-action only)
-   ========================= */
-document.getElementById('markBreakfast').addEventListener('click', ()=> markMeal('Breakfast'));
-document.getElementById('markLunch').addEventListener('click', ()=> markMeal('Lunch'));
-document.getElementById('markDinner').addEventListener('click', ()=> markMeal('Dinner'));
-
-function markMeal(name){
-  const id = name === 'Breakfast' ? 'meal-breakfast' : name === 'Lunch' ? 'meal-lunch' : 'meal-dinner';
-  const ev = scheduledEvents.find(e=>e.id === id);
-  if(!ev) return alert('Event not found');
-  const now = new Date();
-  const start = new Date(ev.date.getTime() - 30*60000);
-  const end = new Date(ev.date.getTime() + 4*3600000);
-  if(now < start || now > end) return alert('Cannot mark now. Available only during meal time window.');
-  const today = isoKey();
-  const store = loadDailySummary();
-  if(!store[today]) store[today] = { dateLabel: labelFromDate(new Date()), trash:{ total:0, breakdown:{} }, ecoPoints:0, activities:[], meals:{}, prayerDone:{}, exerciseDone:{}, murajaahDone:{} };
-  store[today].meals = store[today].meals || {};
-  store[today].meals[`meal-${ev.data.meal.toLowerCase()}`] = true;
-  localStorage.setItem('dailySummary', JSON.stringify(store));
-  // Explicit user action: save to history
-  saveActivity('Meal', `${ev.data.meal} — ${ev.data.menu}`, 0, { allowDuplicateWindowSeconds: 60 });
-  speak(`${name} recorded`, 'en-US');
-  renderHistoryListIfOpen();
-}
-
-/* =========================
-   Exercise list + user marking
-   ========================= */
-function renderExerciseList(){
-  const ul = document.getElementById('exerciseList');
-  const exercises = JSON.parse(localStorage.getItem('todayExercises') || 'null') || defaultExercises;
-  
-  ul.innerHTML = exercises.map(ex => {
-    return `<div class="mini flex justify-between items-center">
-        <div>
-            <b>${ex.name}</b>
-            <div class="small-muted">${ex.time}</div>
+    <div id="quranModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="quranModalTitle" class="text-2xl font-bold text-white"></h2>
+                <button id="closeQuranModal" class="btn btn-ghost">Close</button>
+            </div>
+            <div id="quranModalContent" class="space-y-4"></div>
+            <div class="flex justify-between mt-4">
+                <button id="prevSurah" class="btn btn-solid">Previous</button>
+                <button id="nextSurah" class="btn btn-solid">Next</button>
+            </div>
         </div>
-        <div class="text-right">
-            <input type="checkbox" class="exercise-check" data-exercise="${ex.name}" />
-        </div>
-    </div>`;
-  }).join('');
+    </div>
+    
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+    // Placeholder for global variables and helper functions
+    let scheduledEvents = [];
+    const triggeredIds = new Set();
+    const defaultExercises = [
+        { name: "Push-ups", time: "15:00" },
+        { name: "Sit-ups", time: "15:00" },
+        { name: "Squats", time: "15:00" }
+    ];
 
-  document.querySelectorAll('.exercise-check').forEach(chk => {
-    chk.addEventListener('change', (ev) => {
-      if (!ev.isTrusted) return;
-      const exName = chk.dataset.exercise;
-      const isChecked = chk.checked;
-      const store = loadDailySummary();
-      const today = isoKey();
-      if(!store[today]) store[today] = { dateLabel: labelFromDate(new Date()), trash:{ total:0, breakdown:{} }, ecoPoints:0, activities:[], meals:{}, prayerDone:{}, exerciseDone:{}, murajaahDone:{} };
-      store[today].exerciseDone = store[today].exerciseDone || {};
-      store[today].exerciseDone[exName] = isChecked;
-      localStorage.setItem('dailySummary', JSON.stringify(store));
-      if(isChecked) {
-        saveActivity('Exercise', exName, 0, { allowDuplicateWindowSeconds: 60 });
-        speak(`${exName} marked done`, 'en-US');
-      } else {
-        speak(`${exName} unchecked`, 'en-US');
-      }
-      renderHistoryListIfOpen();
-    });
-  });
-}
-
-/* =========================
-   Tracker (Leaflet) with pace
-   ========================= */
-let map, polyline, watchIdTrack = null, tracking = false;
-let trackCoords = [], trackStart = null, trackElapsedInterval = null, trackDist = 0;
-
-function initMap(){
-  try {
-    const initial = [0,0];
-    map = L.map('map', { zoomControl: true }).setView(initial, 2);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
-    polyline = L.polyline([], { color:'#06b6d4' }).addTo(map);
-  } catch(e){ console.warn('map init', e); }
-}
-initMap();
-
-function haversineDist(a,b){
-  const R = 6371e3;
-  const φ1 = a.lat*Math.PI/180, φ2 = b.lat*Math.PI/180;
-  const Δφ = (b.lat-a.lat)*Math.PI/180, Δλ = (b.lon-a.lon)*Math.PI/180;
-  const sinΔφ2 = Math.sin(Δφ/2), sinΔλ2 = Math.sin(Δλ/2);
-  const aa = (sinΔφ2*sinΔφ2) + Math.cos(φ1)*Math.cos(φ2)*(sinΔλ2*sinΔλ2);
-  const c = 2*Math.atan2(Math.sqrt(aa), Math.sqrt(1-aa));
-  return R*c; // meters
-}
-
-function startTracking(){
-  if(!navigator.geolocation) return alert('Geolocation not supported');
-  if(tracking) return;
-  trackCoords = []; trackDist = 0; trackStart = new Date();
-  document.getElementById('trackStatus').textContent = 'Tracking...'; tracking = true;
-  if(polyline) polyline.setLatLngs([]);
-  watchIdTrack = navigator.geolocation.watchPosition(p=>{
-    const lat = p.coords.latitude, lon = p.coords.longitude;
-    const pt = { lat, lon, ts: Date.now() };
-    if(trackCoords.length > 0){
-      const last = trackCoords[trackCoords.length-1];
-      const d = haversineDist({lat:last.lat, lon:last.lon}, {lat, lon});
-      if(!isNaN(d) && d>0) trackDist += d;
+    function speak(text, lang) {
+        if (!'speechSynthesis' in window) return;
+        const synth = window.speechSynthesis;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = lang;
+        synth.speak(utterance);
     }
-    trackCoords.push(pt);
-    if(polyline) polyline.addLatLng([lat, lon]);
-    if(map) map.setView([lat, lon], 15);
-    document.getElementById('trackDistance').textContent = `${(trackDist/1000).toFixed(2)} km`;
-    const elapsed_s = Math.floor((Date.now() - trackStart.getTime())/1000);
-    const pace = trackDist>0 ? (elapsed_s / (trackDist/1000)) : 0;
-    if(pace>0) {
-      const min = Math.floor(pace/60);
-      const sec = Math.round(pace%60);
-      document.getElementById('trackElapsed').textContent = `${pad(Math.floor(elapsed_s/3600))}:${pad(Math.floor((elapsed_s%3600)/60))}:${pad(elapsed_s%60)}`;
-    }
-  }, err=>{ console.warn('track err', err); alert('Tracking error: ' + err.message); }, { enableHighAccuracy:true, maximumAge:1000 });
-}
-
-function pauseTracking(){
-  if(!tracking) return;
-  if(watchIdTrack) { navigator.geolocation.clearWatch(watchIdTrack); watchIdTrack=null; document.getElementById('trackStatus').textContent='Paused'; }
-  if(trackElapsedInterval) { clearInterval(trackElapsedInterval); trackElapsedInterval=null; }
-  tracking = false;
-}
-
-function stopAndSaveTracking(){
-  if(watchIdTrack) navigator.geolocation.clearWatch(watchIdTrack);
-  if(trackElapsedInterval) clearInterval(trackElapsedInterval);
-  document.getElementById('trackStatus').textContent='Stopped';
-  if(trackCoords.length > 0){
-    const duration_s = Math.floor((Date.now() - trackStart.getTime())/1000);
-    const runs = JSON.parse(localStorage.getItem('runs')||'[]');
-    const runObj = { id: Date.now(), coords: trackCoords, dist_m: Math.round(trackDist), start_ts: trackStart.getTime(), duration_s };
-    runs.push(runObj);
-    localStorage.setItem('runs', JSON.stringify(runs));
-    speak(`Run saved. Distance ${(trackDist/1000).toFixed(2)} kilometers.`, 'en-US');
-    saveActivity('Run', `Distance ${(trackDist/1000).toFixed(2)} km • Duration ${Math.floor(duration_s/60)}m`, 0, { allowDuplicateWindowSeconds: 120 });
-    renderRunsList();
-    alert('Run saved to history.');
-  } else alert('No activity recorded.');
-  trackCoords=[]; trackDist=0;
-  document.getElementById('trackDistance').textContent='0.00 km';
-  document.getElementById('trackElapsed').textContent='00:00:00';
-  tracking=false; watchIdTrack=null;
-}
-
-document.getElementById('startTrack').addEventListener('click', ()=>{ startTracking(); speak('Tracking started', 'en-US'); });
-document.getElementById('pauseTrack').addEventListener('click', ()=>{ pauseTracking(); speak('Tracking paused', 'en-US'); });
-document.getElementById('stopTrack').addEventListener('click', ()=>{ stopAndSaveTracking(); });
-
-/* Runs UI */
-function loadRuns(){ return JSON.parse(localStorage.getItem('runs')||'[]'); }
-function formatDuration(s){ const hh=Math.floor(s/3600), mm=Math.floor((s%3600)/60), ss=s%60; return `${pad(hh)}:${pad(mm)}:${pad(ss)}`; }
-
-function renderRunsList(){
-  const wrap = document.getElementById('runsListWrap');
-  const runs = loadRuns().slice().reverse();
-  if(!wrap) return;
-  if(runs.length === 0){ wrap.innerHTML = `<div class="small-muted">No saved runs</div>`; document.getElementById('runDetail').textContent='No run selected'; return; }
-  wrap.innerHTML = runs.map(r=>{
-    const d = new Date(r.start_ts);
-    const lbl = `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
-    const km = (r.dist_m/1000).toFixed(2);
-    const dur = formatDuration(r.duration_s||0);
-    return `<div class="flex items-center justify-between gap-2 mb-2 border-b border-white/5 pb-2">
-      <div><div class="font-semibold">${lbl}</div><div class="small-muted text-sm">${km} km • ${dur}</div></div>
-      <div class="flex flex-col gap-2"><button class="view-run btn-sm bg-emerald-400" data-id="${r.id}">View</button><button class="select-run btn-sm bg-white/6" data-id="${r.id}">Select</button></div>
-    </div>`;
-  }).join('');
-  wrap.querySelectorAll('.view-run').forEach(b=>b.addEventListener('click', (ev)=>viewRunOnMap(Number(ev.currentTarget.dataset.id))));
-  wrap.querySelectorAll('.select-run').forEach(b=>b.addEventListener('click', (ev)=>selectRun(Number(ev.currentTarget.dataset.id))));
-}
-renderRunsList();
-
-let selectedRunId = null;
-function selectRun(id){
-  const runs = loadRuns();
-  const r = runs.find(x=>x.id===id);
-  if(!r){ alert('Run not found'); return; }
-  selectedRunId = id;
-  const d = new Date(r.start_ts); const km=(r.dist_m/1000).toFixed(2); const dur=formatDuration(r.duration_s||0);
-  document.getElementById('runDetail').innerHTML = `<div><b>${d.toLocaleDateString()} ${d.toLocaleTimeString()}</b></div><div class="small-muted mt-1">${km} km • ${dur}</div><div class="small-muted mt-2">Points: ${r.coords.length} pts</div>`;
-}
-
-function viewRunOnMap(id){
-  const runs = loadRuns(); const r = runs.find(x=>x.id===id);
-  if(!r){ alert('Run not found'); return; }
-  try {
-    if(!map) initMap();
-    if(polyline) polyline.setLatLngs([]); 
-    const latlngs = r.coords.map(p=>[p.lat,p.lon]);
-    if(polyline) polyline.setLatLngs(latlngs);
-    if(latlngs.length) map.fitBounds(latlngs, { maxZoom: 16 });
-    selectedRunId = id; selectRun(id);
-  } catch(e){ console.warn(e); }
-}
-
-document.getElementById('viewRunOnMapBtn').addEventListener('click', ()=>{ if(!selectedRunId) return alert('Select a run first'); viewRunOnMap(selectedRunId); });
-document.getElementById('deleteRunBtn').addEventListener('click', ()=>{
-  if(!selectedRunId) return alert('Select a run first');
-  if(!confirm('Delete selected run?')) return;
-  let runs = loadRuns(); runs = runs.filter(r=>r.id!==selectedRunId); localStorage.setItem('runs', JSON.stringify(runs)); selectedRunId=null;
-  renderRunsList(); document.getElementById('runDetail').textContent='No run selected';
-});
-document.getElementById('clearRunsBtn').addEventListener('click', ()=>{ if(!confirm('Clear ALL saved runs?')) return; localStorage.setItem('runs','[]'); renderRunsList(); });
-document.getElementById('exportAllRunsBtn').addEventListener('click', ()=>{
-  const runs = loadRuns();
-  const blob = new Blob([JSON.stringify(runs,null,2)], { type:'application/json' });
-  const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = `runs-all-${Date.now()}.json`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-});
-
-/* =========================
-   Trash log & Eco Challenges
-   ========================= */
-let trashLog = JSON.parse(localStorage.getItem('trashLog')||'[]');
-function renderTrash(){
-  const ul = document.getElementById('trashList');
-  const today = new Date().toLocaleDateString();
-  const todayLog = trashLog.filter(t=>t.date===today);
-  ul.innerHTML = todayLog.map(t=>`<li>${t.time} — ${t.type}: ${t.weight} g</li>`).join('') || '<li class="small-muted">No entries today</li>';
-  const total = todayLog.reduce((s,t)=>s + Number(t.weight),0);
-  document.getElementById('trashTotal').textContent = `Total: ${total} g`;
-}
-renderTrash();
-
-document.getElementById('addTrashBtn').addEventListener('click', ()=>{
-  const type = document.getElementById('trashType').value.trim() || 'Other';
-  const weight = parseInt(document.getElementById('trashWeight').value) || 0;
-  if(!weight) return alert('Enter weight in grams');
-  const now = new Date();
-  const entry = { date: now.toLocaleDateString(), time: now.toLocaleTimeString(), type, weight };
-  trashLog.push(entry);
-  localStorage.setItem('trashLog', JSON.stringify(trashLog));
-  document.getElementById('trashType').value=''; document.getElementById('trashWeight').value='';
-  renderTrash();
-  // explicit user action -> save history
-  saveActivity('Trash', `${weight} g (${type})`, 0, { allowDuplicateWindowSeconds: 60 });
-  speak(`Trash logged ${weight} grams ${type}`, 'en-US');
-});
-
-document.getElementById('clearTrashBtn').addEventListener('click', ()=>{
-  if(!confirm('Clear today trash?')) return;
-  const today = new Date().toLocaleDateString();
-  trashLog = trashLog.filter(t=>t.date !== today);
-  localStorage.setItem('trashLog', JSON.stringify(trashLog));
-  renderTrash();
-});
-
-/* Eco challenges */
-const challengesTemplate = [
-  { id: 'c1', text: 'Bring your own water bottle', pts: 5 },
-  { id: 'c2', text: 'Use a reusable bag', pts: 4 },
-  { id: 'c3', text: 'Cycle instead of driving for 2 km', pts: 8 },
-  { id: 'c4', text: 'Pick up 3 pieces of trash', pts: 6 },
-];
-let ecoPoints = parseInt(localStorage.getItem('ecoPoints')||'0');
-function renderChallenges(){
-  const ul = document.getElementById('challengeList');
-  const done = JSON.parse(localStorage.getItem('chDone')||'{}');
-  ul.innerHTML = challengesTemplate.map(c=>{
-    const checked = done[c.id] ? 'checked' : '';
-    return `<li class="mini flex justify-between items-center"><div><input type="checkbox" data-id="${c.id}" ${checked} /> <span class="small-muted ml-2">${c.text}</span></div><div class="small-muted">${c.pts} pts</div></li>`;
-  }).join('');
-  document.getElementById('ecoPoints').textContent = ecoPoints;
-  document.querySelectorAll('#challengeList input[type=checkbox]').forEach(cb=>{
-    cb.addEventListener('change', (ev)=>{
-      if(!ev.isTrusted) return;
-      const id = cb.dataset.id;
-      const conf = challengesTemplate.find(x=>x.id===id);
-      const doneObj = JSON.parse(localStorage.getItem('chDone')||'{}');
-      if(cb.checked){
-        if(!doneObj[id]){
-          doneObj[id] = true;
-          ecoPoints += conf.pts;
-          // explicit user action -> save history
-          saveActivity('Eco Challenge', conf.text, conf.pts, { allowDuplicateWindowSeconds: 300 });
-          speak(`${conf.text} completed. You earned ${conf.pts} points.`, 'en-US');
+    
+    function showNotification(title, body) {
+        if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification(title, { body });
         }
-      } else {
-        if(doneObj[id]){
-          delete doneObj[id];
-          ecoPoints -= conf.pts;
-          speak(`${conf.text} unchecked. Points removed.`, 'en-US');
+    }
+    
+    function pad(n) { return n < 10 ? '0' + n : n; }
+    function isoKey(d = new Date()){ const y=d.getFullYear(), m=pad(d.getMonth()+1), day=pad(d.getDate()); return `${y}-${m}-${day}`; }
+    function labelFromDate(d = new Date()){ return d.toLocaleDateString(undefined, { day:'2-digit', month:'short', year:'numeric' }); }
+    function loadJSON(key, defaultValue = {}) {
+        try {
+            return JSON.parse(localStorage.getItem(key)) || defaultValue;
+        } catch(e) {
+            console.warn(`Error loading JSON from localStorage for key '${key}':`, e);
+            return defaultValue;
         }
-      }
-      localStorage.setItem('chDone', JSON.stringify(doneObj));
-      localStorage.setItem('ecoPoints', ecoPoints);
-      document.getElementById('ecoPoints').textContent = ecoPoints;
-      renderHistoryListIfOpen();
-    });
-  });
-}
-renderChallenges();
-
-/* =========================
-   Unified Activity History & dailySummary
-   - Deduplication included
-   ========================= */
-function isoKey(d = new Date()){
-  const y=d.getFullYear(), m=pad(d.getMonth()+1), day=pad(d.getDate());
-  return `${y}-${m}-${day}`;
-}
-function labelFromDate(d = new Date()){
-  return d.toLocaleDateString(undefined, { day:'2-digit', month:'short', year:'numeric' });
-}
-function loadActivityHistory(){ return JSON.parse(localStorage.getItem('activityHistory')||'[]'); }
-function saveActivityHistory(arr){ localStorage.setItem('activityHistory', JSON.stringify(arr)); }
-
-function isDuplicateActivity(type, detail, ts, windowSeconds = 60){
-  const hist = loadActivityHistory();
-  for(let i = hist.length - 1; i >= Math.max(0, hist.length - 50); i--){
-    const h = hist[i];
-    if(!h) continue;
-    if(h.type === type && h.detail === detail){
-      if(Math.abs((ts || Date.now()) - (h.ts || 0)) <= windowSeconds*1000) return true;
     }
-  }
-  return false;
-}
-
-function saveActivity(type, detail, points = 0, opts = {}) {
-  try {
-    const now = new Date();
-    const iso = isoKey(now);
-    const label = labelFromDate(now);
-    const hist = loadActivityHistory();
-    const allowWindow = opts.allowDuplicateWindowSeconds || 60;
-    if (!opts.force && isDuplicateActivity(type, detail, Date.now(), allowWindow)) {
-      // duplicate within window -> skip
-      return false;
+    function saveJSON(key, value) {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+        } catch(e) {
+            console.warn(`Error saving JSON to localStorage for key '${key}':`, e);
+        }
     }
-    hist.push({ dateISO: iso, dateLabel: label, type, detail, points, ts: Date.now() });
-    saveActivityHistory(hist);
-    addToDailySummary(type, detail, points);
-    renderHistoryListIfOpen();
-    return true;
-  } catch(e){ console.warn('saveActivity error', e); return false; }
-}
 
-function addToDailySummary(type, detail, points){
-  const key = isoKey();
-  const store = JSON.parse(localStorage.getItem('dailySummary')||'{}');
-  if(!store[key]) store[key] = { dateLabel: labelFromDate(new Date()), trash:{ total:0, breakdown:{} }, ecoPoints:0, activities:[], meals:{}, prayerDone:{}, exerciseDone:{}, murajaahDone:{} };
-  const day = store[key];
-  if(type === 'Trash'){
-    const m = detail.match(/(\d+)\s*g/);
-    const w = m ? Number(m[1]) : 0;
-    day.trash.total = (day.trash.total||0) + w;
-    const kindM = detail.match(/\(([^)]+)\)/);
-    const kind = kindM ? kindM[1] : 'Other';
-    day.trash.breakdown[kind] = (day.trash.breakdown[kind]||0) + w;
-  } else if(type === 'Eco Challenge'){
-    day.ecoPoints = (day.ecoPoints||0) + (points||0);
-    day.activities.push(`${type}: ${detail} (+${points} pts)`);
-  } else if(type === 'Meal'){
-    day.meals = day.meals || {};
-    const keyName = detail.split(' — ')[0] || detail;
-    day.meals[`meal-${keyName.toLowerCase()}`] = true;
-    day.activities.push(`${type}: ${detail}`);
-  } else if(type === 'Prayer'){
-    day.prayerDone = day.prayerDone || {};
-    day.prayerDone[detail] = true;
-    day.activities.push(`${type}: ${detail}`);
-  } else if(type === 'Exercise'){
-    day.exerciseDone = day.exerciseDone || {};
-    day.exerciseDone[detail] = true;
-    day.activities.push(`${type}: ${detail}`);
-  } else if(type === 'Murajaah') {
-    day.murajaahDone = day.murajaahDone || {};
-    day.murajaahDone[detail] = true;
-    day.activities.push(`${type}: ${detail}`);
-  } else {
-    day.activities.push(`${type}: ${detail}`);
-  }
-  localStorage.setItem('dailySummary', JSON.stringify(store));
-}
-
-function loadDailySummary(){ return JSON.parse(localStorage.getItem('dailySummary')||'{}'); }
-
-function renderHistoryList(){
-  const wrap = document.getElementById('historyList');
-  const daily = loadDailySummary();
-  const keys = Object.keys(daily).sort((a,b)=> b.localeCompare(a));
-  if(!keys.length){ wrap.innerHTML = `<div class="small-muted">No activity history yet</div>`; speak('No activity history yet', 'en-US'); return; }
-  wrap.innerHTML = keys.map(k=>{
-    const day = daily[k];
-    const trashTotal = (day.trash && day.trash.total) ? day.trash.total : 0;
-    const eco = day.ecoPoints || 0;
-    const acts = day.activities || [];
-    return `<div class="border-b border-white/6 pb-2">
-      <button class="history-day w-full text-left py-2" data-key="${k}">
-        <div class="font-semibold">${day.dateLabel || k}</div>
-        <div class="small-muted">${trashTotal} g trash • ${eco} pts • ${acts.length} activities</div>
-      </button>
-      <div class="history-detail hidden mt-2 small-muted" id="detail-${k.replace(/:/g,'-')}"></div>
-    </div>`;
-  }).join('');
-  wrap.querySelectorAll('.history-day').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const key = btn.dataset.key;
-      const detailEl = document.getElementById(`detail-${key.replace(/:/g,'-')}`);
-      if(!detailEl) return;
-      if(!detailEl.innerHTML){
-        const day = loadDailySummary()[key];
-        const trash = day.trash || { total:0, breakdown:{} };
-        const breakdown = Object.keys(trash.breakdown||{}).map(k=>`${k} ${trash.breakdown[k]} g`).join(', ');
-        const activities = (day.activities||[]).map(a=>`<li>${a}</li>`).join('') || '<li>No activities</li>';
-        detailEl.innerHTML = `<ul class="list-disc ml-6">
-          <li>Trash: ${trash.total} g ${breakdown ? `(${breakdown})` : ''}</li>
-          <li>Eco Points: ${day.ecoPoints || 0} pts</li>
-          <li>Meals: ${day.meals ? Object.keys(day.meals).length : 0}</li>
-          <li>Activities:</li>
-          <ul class="ml-6">${activities}</ul>
-        </ul>`;
-      }
-      detailEl.classList.toggle('hidden');
-      const day = loadDailySummary()[key];
-      const summaryText = `${day.dateLabel}. Trash ${day.trash.total || 0} grams. Eco points ${day.ecoPoints || 0}. ${ (day.activities || []).length } activities.`;
-      speak(summaryText, 'en-US');
-    });
-  });
-}
-function renderHistoryListIfOpen(){ const sec = document.getElementById('historySection'); if(sec && sec.style.display === 'block') renderHistoryList(); }
-
-document.getElementById('toggleHistoryBtn').addEventListener('click', ()=>{
-  const sec = document.getElementById('historySection');
-  if(sec.style.display === 'block'){ sec.style.display = 'none'; speak('History closed', 'en-US'); }
-  else { sec.style.display = 'block'; renderHistoryList(); sec.scrollIntoView({ behavior:'smooth' }); speak('Displaying activity history', 'en-US'); }
-});
-
-/* =========================
-   Murajaah (Quran) loader & modal
-   ========================= */
-let quranData = null;
-const murajaahBox = document.getElementById('murajaahBox');
-
-function pickMurajaahThreeFromList(list){
-  const d = new Date();
-  const idx = (d.getFullYear()*10000 + (d.getMonth()+1)*100 + d.getDate()) % list.length;
-  const three = [];
-  for(let i=0;i<3;i++) three.push(list[(idx + i) % list.length]);
-  return three;
-}
-
-async function loadQuranJSON(){
-  try {
-    const r = await fetch('data/quran.json');
-    quranData = await r.json();
-    renderMurajaah();
-  } catch(e){
-    console.warn('Failed loading quran.json', e);
-    quranData = null;
-    if(murajaahBox) murajaahBox.innerHTML = '<div class="small-muted">Quran data not loaded (data/quran.json missing)</div>';
-  }
-}
-
-function renderMurajaah(){
-  const todayISO = isoKey();
-  let mem = loadJSON('murajaahToday', null);
-  if(!mem || mem.date !== todayISO){
-    const picks = quranData ? pickMurajaahThreeFromList(quranData) : ['Data missing'];
-    mem = { date: todayISO, surahs: picks.map(s => (typeof s === 'string' ? s : (s.name || s))) , read: {} };
-    saveJSON('murajaahToday', mem);
-  }
-  if(!murajaahBox) return;
-  murajaahBox.innerHTML = '';
-  mem.surahs.forEach(sName=>{
-    const sObj = quranData ? quranData.find(x=>x.name === sName || (x.name && x.name.replace(/[^A-Za-z0-9]/g,'') === sName.replace(/[^A-Za-z0-9]/g,''))) : null;
-    const readFlag = mem.read && mem.read[sName];
-    const box = document.createElement('div');
-    box.className = 'mini surah-box';
-    box.innerHTML = `<div class="flex justify-between items-start"><div><b>${sName}</b><div class="small-muted">${sObj ? (sObj.translation || '') : ''}</div></div><div><button class="btn btn-ghost read-surah" data-surah="${sName}">${readFlag ? 'Read' : 'Read'}</button></div></div>`;
-    murajaahBox.appendChild(box);
-  });
-  document.querySelectorAll('.read-surah').forEach(b=>{
-    b.addEventListener('click', (ev)=>{
-      const sName = ev.currentTarget.dataset.surah;
-      const sObj = quranData ? quranData.find(x=>x.name === sName || (x.name && x.name.replace(/[^A-Za-z0-9]/g,'') === sName.replace(/[^A-Za-z0-9]/g,''))) : null;
-      if(!sObj){ alert('Surah data not available. Make sure data/quran.json exists.'); return; }
-      openQuranModal(sObj);
-      const mem2 = loadJSON('murajaahToday', {date: isoKey(), surahs:[], read:{}} );
-      mem2.read = mem2.read || {};
-      mem2.read[sName] = true;
-      saveJSON('murajaahToday', mem2);
-      // explicit user action -> save history
-      saveActivity('Murajaah', sName, 0, { allowDuplicateWindowSeconds: 60 });
-      renderMurajaah();
-    });
-  });
-}
-
-let currentSurahIndex = -1;
-function openQuranModal(surah) {
-  if(!quranData) return;
-  currentSurahIndex = quranData.findIndex(s => s.name === surah.name);
-  document.getElementById('quranModalTitle').textContent = `${surah.name} — ${surah.translation || ''}`;
-  const verses = surah.verses || surah.ayahs || surah.text || [];
-  let html = '';
-  if(verses.length && typeof verses[0] === 'object'){
-    verses.forEach((v,i)=>{
-      html += `<div class="border-b py-2"><p class="arabic text-right text-2xl" dir="rtl">${v.arabic}</p><p class="mt-2 small-muted text-sm">${i+1}. ${v.translation || ''}</p></div>`;
-    });
-  } else {
-    verses.forEach((a,i)=> {
-      html += `<div class="border-b py-2"><p class="arabic text-right text-2xl" dir="rtl">${a}</p></div>`;
-    });
-  }
-  document.getElementById('quranModalContent').innerHTML = html;
-  document.getElementById('quranModal').classList.remove('hidden');
-  document.getElementById('prevSurah').disabled = currentSurahIndex <= 0;
-  document.getElementById('nextSurah').disabled = currentSurahIndex >= (quranData ? quranData.length - 1 : 0);
-  speak(`Opening surah ${surah.name}`, 'en-US');
-}
-document.getElementById('closeQuranModal').addEventListener('click', ()=>{ document.getElementById('quranModal').classList.add('hidden'); });
-document.getElementById('prevSurah').addEventListener('click', () => {
-  if (currentSurahIndex > 0) {
-    currentSurahIndex--;
-    openQuranModal(quranData[currentSurahIndex]);
-  }
-});
-document.getElementById('nextSurah').addEventListener('click', () => {
-  if (currentSurahIndex < quranData.length - 1) {
-    currentSurahIndex++;
-    openQuranModal(quranData[currentSurahIndex]);
-  }
-});
-loadQuranJSON();
-
-/* =========================
-   Menus midnight rotation
-   ========================= */
-function midnightWatch(){
-  const now = new Date(); const next = new Date(now); next.setHours(24,0,0,0);
-  const ms = next - now + 1000;
-  setTimeout(()=>{
-    const d = new Date();
-    const idx = (d.getFullYear()*100 + d.getMonth()+1 + d.getDate()) % 7;
-    const breakfastOpts = ["Dates & milk — Prophet’s breakfast","Honey & banana — energy","Barley bread & yogurt"];
-    const lunchOpts = ["Brown rice & grilled chicken","Quinoa & tuna salad","Whole grain bread & hummus"];
-    const dinnerOpts = ["Light veggie soup & yogurt","Goat milk & dates","Fresh fruits & tea"];
-    const menus = {
-      breakfast: breakfastOpts[Math.floor(Math.random()*breakfastOpts.length)],
-      lunch: lunchOpts[Math.floor(Math.random()*lunchOpts.length)],
-      dinner: dinnerOpts[Math.floor(Math.random()*dinnerOpts.length)]
+    /* =========================
+       Scheduler
+       ========================= */
+    const PrayerTimes = {
+        Fajr: "04:45", Dhuhr: "12:00", Asr: "15:04", Maghrib: "17:51", Isha: "18:48"
     };
-    localStorage.setItem(todayMenusKey(), JSON.stringify(menus));
+
+    function buildDailySchedule() {
+        const now = new Date();
+        const today = isoKey(now);
+        const meals = JSON.parse(localStorage.getItem(todayMenusKey())) || defaultMenus;
+        const exercises = JSON.parse(localStorage.getItem('todayExercises')) || defaultExercises;
+        const fastEv = JSON.parse(localStorage.getItem('fastingEvent') || 'null');
+
+        scheduledEvents = [];
+
+        // Prayers
+        const prayerNames = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+        prayerNames.forEach(p => {
+            const [h, m] = PrayerTimes[p].split(':');
+            const date = new Date(now);
+            date.setHours(h, m, 0, 0);
+            scheduledEvents.push({ id: `prayer-${p.toLowerCase()}`, category: 'prayer', name: p, date, data: { prayer: p } });
+        });
+
+        // Meals
+        scheduledEvents.push(
+            { id: 'meal-breakfast', category: 'meal', name: 'Breakfast', date: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 7, 0), data: { meal: 'Breakfast', menu: meals.breakfast } },
+            { id: 'meal-lunch', category: 'meal', name: 'Lunch', date: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0), data: { meal: 'Lunch', menu: meals.lunch } },
+            { id: 'meal-dinner', category: 'meal', name: 'Dinner', date: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 19, 0), data: { meal: 'Dinner', menu: meals.dinner } }
+        );
+
+        // Sleep
+        scheduledEvents.push({ id: 'sleep', category: 'sleep', name: 'Sleep', date: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 22, 0) });
+
+        // Exercises
+        exercises.forEach(ex => {
+            const [h, m] = ex.time.split(':');
+            const date = new Date(now);
+            date.setHours(h, m, 0, 0);
+            scheduledEvents.push({ id: `exercise-${ex.name.replace(/\s/g, '').toLowerCase()}`, category: 'exercise', name: ex.name, date, data: { name: ex.name } });
+        });
+
+        // Fasting
+        if (fastEv && fastEv.date === today) {
+            const imsakTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), fastEv.imsak.h, fastEv.imsak.m);
+            const iftarTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), fastEv.iftar.h, fastEv.iftar.m);
+            scheduledEvents.push({ id: 'imsak', category: 'fast', name: 'Imsak', date: imsakTime, data: { type: 'imsak' } });
+            scheduledEvents.push({ id: 'iftar', category: 'fast', name: 'Iftar', date: iftarTime, data: { type: 'iftar' } });
+        }
+        
+        // Render
+        renderPrayerTimes();
+        renderExerciseList();
+        loadMenusForToday();
+        updateCountdownsAndTriggers();
+    }
+
+    function renderPrayerTimes() {
+        const now = new Date();
+        const pTimes = Object.entries(PrayerTimes).map(([p, t]) => {
+            const [h, m] = t.split(':');
+            const pDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m);
+            let done = false;
+            if (pDate <= now) {
+                const daily = loadDailySummary()[isoKey()] || {};
+                done = !!(daily.prayerDone && daily.prayerDone[p]);
+            }
+            return { name: p, time: t, date: pDate, done };
+        });
+
+        const nextPrayer = pTimes.find(p => p.date > now) || pTimes[0];
+        if (nextPrayer) {
+            document.getElementById('nextPrayer').textContent = `${nextPrayer.name} (${nextPrayer.time})`;
+        } else {
+            document.getElementById('nextPrayer').textContent = `Fajr (${PrayerTimes.Fajr}) (tomorrow)`;
+        }
+
+        const prayerListEl = document.getElementById('prayerList');
+        prayerListEl.innerHTML = pTimes.map(p => {
+            const isDone = p.done ? 'checked' : '';
+            const isDisabled = p.date > now ? 'disabled' : '';
+            return `<div class="flex justify-between items-center mini">
+                        <div>
+                            <b>${p.name}</b>
+                            <div class="small-muted">${p.time}</div>
+                        </div>
+                        <div class="text-right">
+                            <input type="checkbox" class="prayer-check" data-prayer="${p.name}" ${isDone} ${isDisabled} />
+                        </div>
+                    </div>`;
+        }).join('');
+
+        document.querySelectorAll('.prayer-check').forEach(chk => {
+            chk.addEventListener('change', (ev) => {
+                if (!ev.isTrusted) return;
+                const p = chk.dataset.prayer;
+                const isChecked = chk.checked;
+                const store = loadDailySummary();
+                const today = isoKey();
+                if (!store[today]) store[today] = { dateLabel: labelFromDate(new Date()), activities: [], prayerDone: {} };
+                store[today].prayerDone = store[today].prayerDone || {};
+                store[today].prayerDone[p] = isChecked;
+                localStorage.setItem('dailySummary', JSON.stringify(store));
+                if (isChecked) {
+                    saveActivity('Prayer', p, 0, { allowDuplicateWindowSeconds: 60 });
+                    speak(`${p} prayer marked done`, 'en-US');
+                } else {
+                    speak(`${p} prayer unchecked`, 'en-US');
+                }
+                renderHistoryListIfOpen();
+            });
+        });
+    }
+
+    /* friendly time conversion */
+    function msToFriendly(ms){
+        if(ms <= 0) return 'Now';
+        const s = Math.floor(ms/1000) % 60;
+        const m = Math.floor(ms/60000) % 60;
+        const h = Math.floor(ms/3600000);
+        if(h>0) return `${h}h ${m}m ${s}s`;
+        if(m>0) return `${m}m ${s}s`;
+        return `${s}s`;
+    }
+
+    /* update countdowns + triggers */
+    function updateCountdownsAndTriggers(){
+        const now = new Date();
+        const breakfastEvent = scheduledEvents.find(e=>e.id==='meal-breakfast');
+        const lunchEvent = scheduledEvents.find(e=>e.id==='meal-lunch');
+        const dinnerEvent = scheduledEvents.find(e=>e.id==='meal-dinner');
+        document.getElementById('breakfastCountdown').textContent = breakfastEvent ? msToFriendly(breakfastEvent.date - now) : '—';
+        document.getElementById('lunchCountdown').textContent = lunchEvent ? msToFriendly(lunchEvent.date - now) : '—';
+        document.getElementById('dinnerCountdown').textContent = dinnerEvent ? msToFriendly(dinnerEvent.date - now) : '—';
+
+        const sleepEv = scheduledEvents.find(e=>e.id==='sleep');
+        if(document.getElementById('sleepCountdown')) document.getElementById('sleepCountdown').textContent = sleepEv ? msToFriendly(sleepEv.date - now) : '—';
+        const fastEv = scheduledEvents.find(e=>e.category==='fast' && e.date>now);
+        if(document.getElementById('fastingCountdown')) document.getElementById('fastingCountdown').textContent = fastEv ? `${fastEv.name} in ${msToFriendly(fastEv.date - now)}` : 'No fasting reminders today';
+
+        function isInWindow(ev, before=60, after=240){
+            const now = new Date();
+            const start = new Date(ev.date.getTime() - before*60000);
+            const end = new Date(ev.date.getTime() + after*60000);
+            return now >= start && now <= end;
+        }
+
+        document.querySelectorAll('.prayer-check').forEach(chk=>{
+            const p = chk.dataset.prayer;
+            const ev = scheduledEvents.find(e=>e.category==='prayer' && e.data.prayer === p);
+            if(!ev) { chk.disabled = true; return; }
+            chk.disabled = !isInWindow(ev, 30, 180);
+            const today = isoKey();
+            const daily = loadDailySummary()[today] || { activities: [], prayerDone: {} };
+            chk.checked = !!(daily.prayerDone && daily.prayerDone[p]);
+        });
+
+        [['meal-breakfast','markBreakfast'], ['meal-lunch','markLunch'], ['meal-dinner','markDinner']].forEach(pair=>{
+            const ev = scheduledEvents.find(e=>e.id===pair[0]);
+            const btn = document.getElementById(pair[1]);
+            if(!btn || !ev) return;
+            btn.disabled = !isInWindow(ev, 30, 180);
+            const today = isoKey();
+            const ds = loadDailySummary()[today] || {};
+            const mealsDone = ds.meals || {};
+            btn.classList.toggle('bg-emerald-400', !!mealsDone[`meal-${ev.data.meal.toLowerCase()}`]);
+        });
+
+        document.querySelectorAll('.exercise-check').forEach(chk=>{
+            const exName = chk.dataset.exercise;
+            const ev = scheduledEvents.find(e=>e.category==='exercise' && e.data.name === exName);
+            if(!ev) { chk.disabled = true; return; }
+            chk.disabled = !isInWindow(ev, 30, 120);
+            const today = isoKey();
+            const daily = loadDailySummary()[today] || { exerciseDone: {} };
+            chk.checked = !!(daily.exerciseDone && daily.exerciseDone[exName]);
+        });
+
+        scheduledEvents.forEach(ev=>{
+            const remaining = ev.date - now;
+            const key = `${ev.id}|${isoKey(ev.date)}`;
+            if(remaining <= 0 && !triggeredIds.has(key)) {
+                triggeredIds.add(key);
+                handleEventTrigger(ev);
+            }
+        });
+    }
+    setInterval(updateCountdownsAndTriggers, 1000);
+
+    function handleEventTrigger(ev){
+        try {
+            switch(ev.category){
+                case 'prayer':
+                    speak(`It is time for ${ev.data.prayer} prayer.`, 'en-US');
+                    showNotification('Prayer Reminder', `Time for ${ev.data.prayer} prayer`);
+                    break;
+                case 'meal':
+                    speak(`Time for ${ev.data.meal}. Today's menu is: ${ev.data.menu}`, 'en-US');
+                    showNotification('Meal Reminder', `Time for ${ev.data.meal}`);
+                    break;
+                case 'exercise':
+                    speak(`Time to exercise: ${ev.name}`, 'en-US');
+                    showNotification('Exercise Reminder', ev.name);
+                    break;
+                case 'sleep':
+                    speak('Time to sleep. Good night.', 'en-US');
+                    showNotification('Sleep Reminder', 'Time to sleep');
+                    break;
+                case 'fast':
+                    if(ev.data.type === 'imsak'){
+                        speak('Imsak. Stop eating now.', 'en-US');
+                        showNotification('Imsak', 'Stop eating now');
+                    } else if(ev.data.type === 'iftar'){
+                        speak('It is time to break your fast (Iftar).', 'en-US');
+                        showNotification('Iftar', 'Time to break your fast');
+                    }
+                    break;
+            }
+        } catch(e){ console.warn('handleEventTrigger error', e); }
+    }
+
+    /* =========================
+       Meals marking (user-action only)
+       ========================= */
+    document.getElementById('markBreakfast').addEventListener('click', ()=> markMeal('Breakfast'));
+    document.getElementById('markLunch').addEventListener('click', ()=> markMeal('Lunch'));
+    document.getElementById('markDinner').addEventListener('click', ()=> markMeal('Dinner'));
+
+    function markMeal(name){
+        const id = name === 'Breakfast' ? 'meal-breakfast' : name === 'Lunch' ? 'meal-lunch' : 'meal-dinner';
+        const ev = scheduledEvents.find(e=>e.id === id);
+        if(!ev) return alert('Event not found');
+        const now = new Date();
+        const start = new Date(ev.date.getTime() - 30*60000);
+        const end = new Date(ev.date.getTime() + 4*3600000);
+        if(now < start || now > end) return alert('Cannot mark now. Available only during meal time window.');
+        const today = isoKey();
+        const store = loadDailySummary();
+        if(!store[today]) store[today] = { dateLabel: labelFromDate(new Date()), trash:{ total:0, breakdown:{} }, ecoPoints:0, activities:[], meals:{}, prayerDone:{}, exerciseDone:{}, murajaahDone:{} };
+        store[today].meals = store[today].meals || {};
+        store[today].meals[`meal-${ev.data.meal.toLowerCase()}`] = true;
+        localStorage.setItem('dailySummary', JSON.stringify(store));
+        saveActivity('Meal', `${ev.data.meal} — ${ev.data.menu}`, 0, { allowDuplicateWindowSeconds: 60 });
+        speak(`${name} recorded`, 'en-US');
+        renderHistoryListIfOpen();
+    }
+
+    /* =========================
+       Exercise Schedule & handlers
+       ========================= */
+    function renderExerciseList(){
+        const ul = document.getElementById('exerciseList');
+        const exercises = JSON.parse(localStorage.getItem('todayExercises') || 'null') || defaultExercises;
+        
+        ul.innerHTML = exercises.map(ex => {
+            return `<div class="mini flex justify-between items-center">
+                <div>
+                    <b>${ex.name}</b>
+                    <div class="small-muted">${ex.time}</div>
+                </div>
+                <div class="text-right">
+                    <input type="checkbox" class="exercise-check" data-exercise="${ex.name}" />
+                </div>
+            </div>`;
+        }).join('');
+
+        document.querySelectorAll('.exercise-check').forEach(chk => {
+            chk.addEventListener('change', (ev) => {
+                if (!ev.isTrusted) return;
+                const exName = chk.dataset.exercise;
+                const isChecked = chk.checked;
+                const store = loadDailySummary();
+                const today = isoKey();
+                if(!store[today]) store[today] = { dateLabel: labelFromDate(new Date()), trash:{ total:0, breakdown:{} }, ecoPoints:0, activities:[], meals:{}, prayerDone:{}, exerciseDone:{}, murajaahDone:{} };
+                store[today].exerciseDone = store[today].exerciseDone || {};
+                store[today].exerciseDone[exName] = isChecked;
+                localStorage.setItem('dailySummary', JSON.stringify(store));
+                if(isChecked) {
+                    saveActivity('Exercise', exName, 0, { allowDuplicateWindowSeconds: 60 });
+                    speak(`${exName} marked done`, 'en-US');
+                } else {
+                    speak(`${exName} unchecked`, 'en-US');
+                }
+                renderHistoryListIfOpen();
+            });
+        });
+    }
+
+    /* =========================
+       Tracker (Leaflet) with pace
+       ========================= */
+    let map, polyline, watchIdTrack = null, tracking = false;
+    let trackCoords = [], trackStart = null, trackElapsedInterval = null, trackDist = 0;
+
+    function initMap(){
+        try {
+            const initial = [0,0];
+            map = L.map('map', { zoomControl:false }).setView(initial, 2);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+            polyline = L.polyline([], { color:'#06b6d4' }).addTo(map);
+        } catch(e){ console.warn('map init', e); }
+    }
+    initMap();
+
+    function haversineDist(a,b){
+        const R = 6371e3;
+        const φ1 = a.lat*Math.PI/180, φ2 = b.lat*Math.PI/180;
+        const Δφ = (b.lat-a.lat)*Math.PI/180, Δλ = (b.lon-a.lon)*Math.PI/180;
+        const sinΔφ2 = Math.sin(Δφ/2), sinΔλ2 = Math.sin(Δλ/2);
+        const aa = (sinΔφ2*sinΔφ2) + Math.cos(φ1)*Math.cos(φ2)*(sinΔλ2*sinΔλ2);
+        const c = 2*Math.atan2(Math.sqrt(aa), Math.sqrt(1-aa));
+        return R*c;
+    }
+
+    function startTracking(){
+        if(!navigator.geolocation) return alert('Geolocation not supported');
+        if(tracking) return;
+        trackCoords = []; trackDist = 0; trackStart = new Date();
+        document.getElementById('trackStatus').textContent = 'Tracking...'; tracking = true;
+        if(polyline) polyline.setLatLngs([]);
+        watchIdTrack = navigator.geolocation.watchPosition(p=>{
+            const lat = p.coords.latitude, lon = p.coords.longitude;
+            const pt = { lat, lon, ts: Date.now() };
+            if(trackCoords.length > 0){
+                const last = trackCoords[trackCoords.length-1];
+                const d = haversineDist({lat:last.lat, lon:last.lon}, {lat, lon});
+                if(!isNaN(d) && d>0) trackDist += d;
+            }
+            trackCoords.push(pt);
+            if(polyline) polyline.addLatLng([lat, lon]);
+            if(map) map.setView([lat, lon], 15);
+            document.getElementById('trackDistance').textContent = `${(trackDist/1000).toFixed(2)} km`;
+            const elapsed_s = Math.floor((Date.now() - trackStart.getTime())/1000);
+            const pace = trackDist>0 ? (elapsed_s / (trackDist/1000)) : 0;
+            if(pace>0) {
+                const min = Math.floor(pace/60);
+                const sec = Math.round(pace%60);
+                document.getElementById('trackPace').textContent = `${min}'${pad(sec)}'' /km`;
+            } else document.getElementById('trackPace').textContent = `0'00'' /km`;
+        }, err=>{ console.warn('track err', err); alert('Tracking error: ' + err.message); }, { enableHighAccuracy:true, maximumAge:1000 });
+        trackElapsedInterval = setInterval(()=>{
+            const s = Math.floor((Date.now() - trackStart.getTime())/1000);
+            const hh = pad(Math.floor(s/3600)), mm = pad(Math.floor((s%3600)/60)), ss = pad(s%60);
+            if(!document.getElementById('trackElapsed')){
+                const el = document.createElement('div');
+                el.id = 'trackElapsed'; el.className = 'small-muted mt-2';
+                document.getElementById('trackStatus').parentNode.appendChild(el);
+            }
+            document.getElementById('trackElapsed').textContent = `${hh}:${mm}:${ss}`;
+        }, 1000);
+    }
+
+    function pauseTracking(){
+        if(!tracking) return;
+        if(watchIdTrack) { navigator.geolocation.clearWatch(watchIdTrack); watchIdTrack=null; document.getElementById('trackStatus').textContent='Paused'; }
+        if(trackElapsedInterval) { clearInterval(trackElapsedInterval); trackElapsedInterval=null; }
+        tracking = false;
+    }
+
+    function stopAndSaveTracking(){
+        if(watchIdTrack) navigator.geolocation.clearWatch(watchIdTrack);
+        if(trackElapsedInterval) clearInterval(trackElapsedInterval);
+        document.getElementById('trackStatus').textContent='Stopped';
+        if(trackCoords.length > 0){
+            const duration_s = Math.floor((Date.now() - trackStart.getTime())/1000);
+            const runs = JSON.parse(localStorage.getItem('runs')||'[]');
+            const runObj = { id: Date.now(), coords: trackCoords, dist_m: Math.round(trackDist), start_ts: trackStart.getTime(), duration_s };
+            runs.push(runObj);
+            localStorage.setItem('runs', JSON.stringify(runs));
+            speak(`Run saved. Distance ${(trackDist/1000).toFixed(2)} kilometers.`, 'en-US');
+            saveActivity('Run', `Distance ${(trackDist/1000).toFixed(2)} km • Duration ${Math.floor(duration_s/60)}m`, 0, { allowDuplicateWindowSeconds: 120 });
+            renderRunsList();
+        } else alert('No activity recorded.');
+        trackCoords=[]; trackDist=0;
+        document.getElementById('trackDistance').textContent='0.00 km';
+        if(document.getElementById('trackElapsed')) document.getElementById('trackElapsed').textContent='00:00:00';
+        tracking=false; watchIdTrack=null;
+    }
+
+    document.getElementById('startTrack').addEventListener('click', ()=>{ startTracking(); });
+    document.getElementById('pauseTrack').addEventListener('click', ()=>{ pauseTracking(); });
+    document.getElementById('stopTrack').addEventListener('click', ()=>{ stopAndSaveTracking(); });
+
+    /* Runs UI */
+    function loadRuns(){ return JSON.parse(localStorage.getItem('runs')||'[]'); }
+    function formatDuration(s){ const hh=Math.floor(s/3600), mm=Math.floor((s%3600)/60), ss=s%60; return `${pad(hh)}:${pad(mm)}:${pad(ss)}`; }
+
+    function renderRunsList(){
+        const wrap = document.getElementById('runsListWrap');
+        const runs = loadRuns().slice().reverse();
+        if(!wrap) return;
+        if(runs.length === 0){ wrap.innerHTML = `<div class="small-muted">No saved runs</div>`; document.getElementById('runDetail').textContent='No run selected'; return; }
+        wrap.innerHTML = runs.map(r=>{
+            const d = new Date(r.start_ts);
+            const lbl = `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
+            const km = (r.dist_m/1000).toFixed(2);
+            const dur = formatDuration(r.duration_s||0);
+            return `<div class="flex items-center justify-between gap-2 mb-2 border-b border-white/5 pb-2">
+                <div><div class="font-semibold">${lbl}</div><div class="small-muted text-sm">${km} km • ${dur}</div></div>
+                <div class="flex flex-col gap-2"><button class="view-run btn btn-ghost bg-emerald-400" data-id="${r.id}">View</button><button class="select-run btn btn-ghost" data-id="${r.id}">Select</button></div>
+            </div>`;
+        }).join('');
+        wrap.querySelectorAll('.view-run').forEach(b=>b.addEventListener('click', ()=>viewRunOnMap(Number(b.dataset.id))));
+        wrap.querySelectorAll('.select-run').forEach(b=>b.addEventListener('click', ()=>selectRun(Number(b.dataset.id))));
+    }
+    renderRunsList();
+
+    let selectedRunId = null;
+    function selectRun(id){
+        const runs = loadRuns(); const r = runs.find(x=>x.id===id);
+        if(!r){ alert('Run not found'); return; }
+        selectedRunId = id;
+        const d = new Date(r.start_ts); const km=(r.dist_m/1000).toFixed(2); const dur=formatDuration(r.duration_s||0);
+        document.getElementById('runDetail').innerHTML = `<div><b>${d.toLocaleDateString()} ${d.toLocaleTimeString()}</b></div><div class="small-muted mt-1">${km} km • ${dur}</div><div class="small-muted mt-2">Points: ${r.coords.length} pts</div>`;
+    }
+
+    function viewRunOnMap(id){
+        const runs = loadRuns(); const r = runs.find(x=>x.id===id);
+        if(!r){ alert('Run not found'); return; }
+        try {
+            if(!map) initMap();
+            if(polyline) polyline.setLatLngs([]);
+            const latlngs = r.coords.map(p=>[p.lat,p.lon]);
+            if(polyline) polyline.setLatLngs(latlngs);
+            if(latlngs.length) map.fitBounds(latlngs, { maxZoom: 16 });
+            selectedRunId = id; selectRun(id);
+        } catch(e){ console.warn(e); }
+    }
+
+    document.getElementById('viewRunOnMapBtn').addEventListener('click', ()=>{ if(!selectedRunId) return alert('Select a run first'); viewRunOnMap(selectedRunId); });
+    document.getElementById('deleteRunBtn').addEventListener('click', ()=>{
+        if(!selectedRunId) return alert('Select a run first');
+        if(!confirm('Delete selected run?')) return;
+        let runs = loadRuns(); runs = runs.filter(r=>r.id!==selectedRunId); localStorage.setItem('runs', JSON.stringify(runs)); selectedRunId=null;
+        renderRunsList(); document.getElementById('runDetail').textContent='No run selected';
+    });
+    document.getElementById('clearRunsBtn').addEventListener('click', ()=>{ if(!confirm('Clear ALL saved runs?')) return; localStorage.setItem('runs','[]'); renderRunsList(); });
+    document.getElementById('exportAllRunsBtn').addEventListener('click', ()=>{
+        const runs = loadRuns();
+        const blob = new Blob([JSON.stringify(runs,null,2)], { type:'application/json' });
+        const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download = `runs-all-${Date.now()}.json`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+    /* =========================
+       Trash Log & Eco Challenges
+       ========================= */
+    let trashLog = JSON.parse(localStorage.getItem('trashLog')||'[]');
+    function renderTrash(){
+        const ul = document.getElementById('trashList');
+        const today = new Date().toLocaleDateString();
+        const todayLog = trashLog.filter(t=>t.date===today);
+        ul.innerHTML = todayLog.map(t=>`<li>${t.time} — ${t.type}: ${t.weight} g</li>`).join('') || '<li class="small-muted">No entries today</li>';
+        const total = todayLog.reduce((s,t)=>s + Number(t.weight),0);
+        document.getElementById('trashTotal').textContent = `Total: ${total} g`;
+    }
+    renderTrash();
+
+    document.getElementById('addTrashBtn').addEventListener('click', ()=>{
+        const type = document.getElementById('trashType').value.trim() || 'Other';
+        const weight = parseInt(document.getElementById('trashWeight').value) || 0;
+        if(!weight) return alert('Enter weight in grams');
+        const now = new Date();
+        const entry = { date: now.toLocaleDateString(), time: now.toLocaleTimeString(), type, weight };
+        trashLog.push(entry);
+        localStorage.setItem('trashLog', JSON.stringify(trashLog));
+        document.getElementById('trashType').value=''; document.getElementById('trashWeight').value='';
+        renderTrash();
+        saveActivity('Trash', `${weight} g (${type})`, 0, { allowDuplicateWindowSeconds: 60 });
+        speak(`Trash logged ${weight} grams ${type}`, 'en-US');
+    });
+
+    document.getElementById('clearTrashBtn').addEventListener('click', ()=>{
+        if(!confirm('Clear today trash?')) return;
+        const today = new Date().toLocaleDateString();
+        trashLog = trashLog.filter(t=>t.date !== today);
+        localStorage.setItem('trashLog', JSON.stringify(trashLog));
+        renderTrash();
+    });
+
+    /* Eco challenges */
+    const challengesTemplate = [
+        {id:'c1', text:'Bring your own water bottle', pts:5},
+        {id:'c2', text:'Use a reusable bag', pts:4},
+        {id:'c3', text:'Cycle instead of driving for 2 km', pts:8},
+        {id:'c4', text:'Pick up 3 pieces of trash', pts:6},
+    ];
+    let ecoPoints = parseInt(localStorage.getItem('ecoPoints')||'0');
+
+    function renderChallenges(){
+        const ul = document.getElementById('challengeList');
+        const done = JSON.parse(localStorage.getItem('chDone')||'{}');
+        ul.innerHTML = challengesTemplate.map(c=>{
+            const checked = done[c.id] ? 'checked' : '';
+            return `<li class="mini flex justify-between items-center"><div><input type="checkbox" data-id="${c.id}" ${checked} /> <span class="small-muted ml-2">${c.text}</span></div><div class="small-muted">${c.pts} pts</div></li>`;
+        }).join('');
+        document.getElementById('ecoPoints').textContent = ecoPoints;
+        document.querySelectorAll('#challengeList input[type=checkbox]').forEach(cb=>{
+            cb.addEventListener('change', (ev)=>{
+                if(!ev.isTrusted) return;
+                const id = cb.dataset.id;
+                const conf = challengesTemplate.find(x=>x.id===id);
+                const doneObj = JSON.parse(localStorage.getItem('chDone')||'{}');
+                if(cb.checked){
+                    if(!doneObj[id]){
+                        doneObj[id] = true;
+                        ecoPoints += conf.pts;
+                        saveActivity('Eco Challenge', conf.text, conf.pts, { allowDuplicateWindowSeconds: 300 });
+                        speak(`${conf.text} completed. You earned ${conf.pts} points.`, 'en-US');
+                    }
+                } else {
+                    if(doneObj[id]){
+                        delete doneObj[id];
+                        ecoPoints -= conf.pts;
+                        speak(`${conf.text} unchecked. Points removed.`, 'en-US');
+                    }
+                }
+                localStorage.setItem('chDone', JSON.stringify(doneObj));
+                localStorage.setItem('ecoPoints', ecoPoints);
+                document.getElementById('ecoPoints').textContent = ecoPoints;
+                renderHistoryListIfOpen();
+            });
+        });
+    }
+    renderChallenges();
+
+    /* =========================
+       Activity history / dailySummary aggregator
+       ========================= */
+
+    function loadActivityHistory(){ return JSON.parse(localStorage.getItem('activityHistory')||'[]'); }
+    function saveActivityHistory(arr){ localStorage.setItem('activityHistory', JSON.stringify(arr)); }
+
+    function isDuplicateActivity(type, detail, ts, windowSeconds = 60){
+        const hist = loadActivityHistory();
+        for(let i = hist.length - 1; i >= Math.max(0, hist.length - 20); i--){
+            const h = hist[i];
+            if(!h) continue;
+            if(h.type === type && h.detail === detail){
+                if(Math.abs((ts || Date.now()) - (h.ts || 0)) <= windowSeconds*1000) return true;
+            }
+        }
+        return false;
+    }
+
+    function saveActivity(type, detail, points = 0, opts = {}) {
+        try {
+            const now = new Date();
+            const iso = isoKey(now);
+            const label = labelFromDate(now);
+            const hist = loadActivityHistory();
+            const allowWindow = opts.allowDuplicateWindowSeconds || 60;
+            if (!opts.force && isDuplicateActivity(type, detail, Date.now(), allowWindow)) {
+                return false;
+            }
+            hist.push({ dateISO: iso, dateLabel: label, type, detail, points, ts: Date.now() });
+            saveActivityHistory(hist);
+            addToDailySummary(type, detail, points);
+            renderHistoryListIfOpen();
+            return true;
+        } catch(e){ console.warn('saveActivity error', e); return false; }
+    }
+
+    function addToDailySummary(type, detail, points){
+        const key = isoKey();
+        const store = JSON.parse(localStorage.getItem('dailySummary')||'{}');
+        if(!store[key]) store[key] = { dateLabel: labelFromDate(new Date()), trash:{ total:0, breakdown:{} }, ecoPoints:0, activities:[], meals:{}, prayerDone:{}, exerciseDone:{}, murajaahDone:{} };
+        const day = store[key];
+        if(type === 'Trash'){
+            const m = detail.match(/(\d+)\s*g/);
+            const w = m ? Number(m[1]) : 0;
+            day.trash.total = (day.trash.total||0) + w;
+            const kindM = detail.match(/\(([^)]+)\)/);
+            const kind = kindM ? kindM[1] : 'Other';
+            day.trash.breakdown[kind] = (day.trash.breakdown[kind]||0) + w;
+        } else if(type === 'Eco Challenge'){
+            day.ecoPoints = (day.ecoPoints||0) + (points||0);
+            day.activities.push(`${type}: ${detail} (+${points} pts)`);
+        } else if(type === 'Meal'){
+            day.meals = day.meals || {};
+            const keyName = detail.split(' — ')[0] || detail;
+            day.meals[`meal-${keyName.toLowerCase()}`] = true;
+            day.activities.push(`${type}: ${detail}`);
+        } else if(type === 'Prayer'){
+            day.prayerDone = day.prayerDone || {};
+            day.prayerDone[detail] = true;
+            day.activities.push(`${type}: ${detail}`);
+        } else if(type === 'Exercise'){
+            day.exerciseDone = day.exerciseDone || {};
+            day.exerciseDone[detail] = true;
+            day.activities.push(`${type}: ${detail}`);
+        } else if(type === 'Murajaah') {
+            day.murajaahDone = day.murajaahDone || {};
+            day.murajaahDone[detail] = true;
+            day.activities.push(`${type}: ${detail}`);
+        } else {
+            day.activities.push(`${type}: ${detail}`);
+        }
+        localStorage.setItem('dailySummary', JSON.stringify(store));
+    }
+
+    function loadDailySummary(){ return JSON.parse(localStorage.getItem('dailySummary')||'{}'); }
+
+    function renderHistoryList(){
+        const wrap = document.getElementById('historyList');
+        const daily = loadDailySummary();
+        const keys = Object.keys(daily).sort((a,b)=> b.localeCompare(a));
+        if(!keys.length){ wrap.innerHTML = `<div class="small-muted">No activity history yet</div>`; speak('No activity history yet', 'en-US'); return; }
+        wrap.innerHTML = keys.map(k=>{
+            const day = daily[k];
+            const trashTotal = (day.trash && day.trash.total) ? day.trash.total : 0;
+            const eco = day.ecoPoints || 0;
+            const acts = day.activities || [];
+            return `<div class="border-b border-white/6 pb-2">
+                <button class="history-day w-full text-left py-2" data-key="${k}">
+                    <div class="font-semibold">${day.dateLabel || k}</div>
+                    <div class="small-muted">${trashTotal} g trash • ${eco} pts • ${acts.length} activities</div>
+                </button>
+                <div class="history-detail hidden mt-2 small-muted" id="detail-${k.replace(/:/g,'-')}"></div>
+            </div>`;
+        }).join('');
+        wrap.querySelectorAll('.history-day').forEach(btn=>{
+            btn.addEventListener('click', ()=>{
+                const key = btn.dataset.key;
+                const detailEl = document.getElementById(`detail-${key.replace(/:/g,'-')}`);
+                if(!detailEl) return;
+                if(!detailEl.innerHTML){
+                    const day = loadDailySummary()[key];
+                    const trash = day.trash || { total:0, breakdown:{} };
+                    const breakdown = Object.keys(trash.breakdown||{}).map(k=>`${k} ${trash.breakdown[k]} g`).join(', ');
+                    const activities = (day.activities||[]).map(a=>`<li>${a}</li>`).join('') || '<li>No activities</li>';
+                    detailEl.innerHTML = `<ul class="list-disc ml-6">
+                        <li>Trash: ${trash.total} g ${breakdown ? `(${breakdown})` : ''}</li>
+                        <li>Eco Points: ${day.ecoPoints || 0} pts</li>
+                        <li>Meals: ${day.meals ? Object.keys(day.meals).length : 0}</li>
+                        <li>Activities:</li>
+                        <ul class="ml-6">${activities}</ul>
+                    </ul>`;
+                }
+                detailEl.classList.toggle('hidden');
+                const day = loadDailySummary()[key];
+                const summaryText = `${day.dateLabel}. Trash ${day.trash.total || 0} grams. Eco points ${day.ecoPoints || 0}. ${ (day.activities || []).length } activities.`;
+                speak(summaryText, 'en-US');
+            });
+        });
+    }
+    function renderHistoryListIfOpen(){ const sec = document.getElementById('historySection'); if(sec && sec.style.display === 'block') renderHistoryList(); }
+
+    document.getElementById('toggleHistoryBtn').addEventListener('click', ()=>{
+        const sec = document.getElementById('historySection');
+        if(sec.style.display === 'block'){ sec.style.display = 'none'; speak('History closed', 'en-US'); }
+        else { sec.style.display = 'block'; renderHistoryList(); sec.scrollIntoView({ behavior:'smooth' }); speak('Displaying activity history', 'en-US'); }
+    });
+
+    /* =========================
+       Murajaah loader (data/quran.json)
+       ========================= */
+    let quranData = null;
+    const murajaahBox = document.getElementById('murajaahBox');
+
+    function pickMurajaahThreeFromList(list){
+        const d = new Date();
+        const idx = (d.getFullYear()*10000 + (d.getMonth()+1)*100 + d.getDate()) % list.length;
+        const three = [];
+        for(let i=0;i<3;i++) three.push(list[(idx + i) % list.length]);
+        return three;
+    }
+
+    async function loadQuranJSON(){
+        try {
+            const r = await fetch('data/quran.json');
+            quranData = await r.json();
+            renderMurajaah();
+        } catch(e){
+            console.warn('Failed loading quran.json', e);
+            quranData = null;
+            murajaahBox.innerHTML = '<div class="small-muted">Quran data not loaded (data/quran.json missing)</div>';
+        }
+    }
+
+    function renderMurajaah(){
+        const todayISO = isoKey();
+        let mem = loadJSON('murajaahToday', null);
+        if(!mem || mem.date !== todayISO){
+            const picks = quranData ? pickMurajaahThreeFromList(quranData) : ['Data missing'];
+            mem = { date: todayISO, surahs: picks.map(s => (typeof s === 'string' ? s : (s.name || s))) , read: {} };
+            saveJSON('murajaahToday', mem);
+        }
+        murajaahBox.innerHTML = '';
+        mem.surahs.forEach(sName=>{
+            const sObj = quranData ? quranData.find(x=>x.name === sName || (x.name && x.name.replace(/[^A-Za-z0-9]/g,'') === sName.replace(/[^A-Za-z0-9]/g,''))) : null;
+            const readFlag = mem.read && mem.read[sName];
+            const box = document.createElement('div');
+            box.className = 'mini surah-box';
+            box.innerHTML = `<div class="flex justify-between items-start"><div><b>${sName}</b><div class="small-muted">${sObj ? (sObj.translation || '') : ''}</div></div><div><button class="btn btn-ghost read-surah" data-surah="${sName}">${readFlag ? 'Read' : 'Read'}</button></div></div>`;
+            murajaahBox.appendChild(box);
+        });
+        document.querySelectorAll('.read-surah').forEach(b=>{
+            b.addEventListener('click', (ev)=>{
+                const sName = ev.currentTarget.dataset.surah;
+                const sObj = quranData ? quranData.find(x=>x.name === sName || (x.name && x.name.replace(/[^A-Za-z0-9]/g,'') === sName.replace(/[^A-Za-z0-9]/g,''))) : null;
+                if(!sObj){ alert('Surah data not available. Make sure data/quran.json exists.'); return; }
+                openQuranModal(sObj);
+                const mem2 = loadJSON('murajaahToday', {date: isoKey(), surahs:[], read:{}} );
+                mem2.read = mem2.read || {};
+                mem2.read[sName] = true;
+                saveJSON('murajaahToday', mem2);
+                saveActivity('Murajaah', sName, 0, { allowDuplicateWindowSeconds: 60 });
+                renderMurajaah();
+            });
+        });
+    }
+
+    let currentSurahIndex = -1;
+    function openQuranModal(surah) {
+        currentSurahIndex = quranData.findIndex(s => s.name === surah.name);
+        document.getElementById('quranModalTitle').textContent = `${surah.name} — ${surah.translation || ''}`;
+        const verses = surah.verses || surah.ayahs || surah.text || [];
+        let html = '';
+        if(verses.length && typeof verses[0] === 'object'){
+            verses.forEach((v,i)=>{
+                html += `<div class="border-b py-2"><p class="arabic text-right text-2xl" dir="rtl">${v.arabic}</p><p class="mt-2 small-muted text-sm">${i+1}. ${v.translation || ''}</p></div>`;
+            });
+        } else {
+            verses.forEach((a,i)=> {
+                html += `<div class="border-b py-2"><p class="arabic text-right text-2xl" dir="rtl">${a}</p></div>`;
+            });
+        }
+        document.getElementById('quranModalContent').innerHTML = html;
+        document.getElementById('quranModal').classList.remove('hidden');
+        document.getElementById('prevSurah').disabled = currentSurahIndex <= 0;
+        document.getElementById('nextSurah').disabled = currentSurahIndex >= (quranData ? quranData.length - 1 : 0);
+        speak(`Opening surah ${surah.name}`, 'en-US');
+    }
+    document.getElementById('closeQuranModal').addEventListener('click', ()=>{ document.getElementById('quranModal').classList.add('hidden'); });
+    document.getElementById('prevSurah').addEventListener('click', () => {
+        if (currentSurahIndex > 0) {
+            currentSurahIndex--;
+            openQuranModal(quranData[currentSurahIndex]);
+        }
+    });
+    document.getElementById('nextSurah').addEventListener('click', () => {
+        if (currentSurahIndex < quranData.length - 1) {
+            currentSurahIndex++;
+            openQuranModal(quranData[currentSurahIndex]);
+        }
+    });
+    loadQuranJSON();
+
+    /* =========================
+       Menus, midnight rotation
+       ========================= */
+    function todayMenusKey(){
+        const d = new Date(); return `menus-${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+    }
+
+    const mealPlans = [
+        { breakfast: "Uduk Rice with Omelette & Tempe Orek", lunch: "Brown rice with Grilled Chicken, Stir-fried Greens & Tofu", dinner: "Clear Vegetable Soup with Steamed Fish & Fruits", milk: "Low-fat milk" },
+        { breakfast: "Wholegrain Bread with Peanut Butter & Banana", lunch: "Gado-gado with Lontong, Boiled Egg & Long Beans", dinner: "Green Salad with Tuna & Sweet Potato", milk: "Soy milk" },
+        { breakfast: "Chicken Porridge with Soybeans & Crackers", lunch: "Yellow Rice with Shredded Chicken, Potato Fritter & Spiced Egg", dinner: "Baked Salmon with Steamed Broccoli & Cherry Tomatoes", milk: "Almond milk" },
+        { breakfast: "Oatmeal with Berries & Nuts", lunch: "White Rice with Fried Mackerel, Sayur Asem & Tempe", dinner: "Tofu Mushroom Pepes & Stir-fried Beans", milk: "Cow milk" },
+        { breakfast: "Dragonfruit Smoothie, Banana & Spinach", lunch: "Brown Rice with Spiced Chicken, Stir-fried Greens & Tofu Bacem", dinner: "Corn Soup with Beef & Tomato", milk: "Low-fat milk" },
+        { breakfast: "Boiled Egg, Potato & Wholegrain Bread", lunch: "Chicken Satay with Lontong & Cucumber Salad", dinner: "Nasi Timbel with Salted Fish, Tofu, Tempe & Raw Vegetables", milk: "Almond milk" },
+        { breakfast: "Fruit Salad with Yoghurt & Granola", lunch: "White Rice with Semur, Fried Egg & Clear Soup", dinner: "Green Bean Porridge with Bread", milk: "Soy milk" }
+    ];
+
+    const defaultMenus = {
+        breakfast: "Dates & milk — Prophetic breakfast",
+        lunch: "Brown rice & grilled chicken — balanced",
+        dinner: "Light vegetable soup & fruit — easy digestion"
+    };
+
+    function loadMenusForToday(){
+        let menus = JSON.parse(localStorage.getItem(todayMenusKey()) || 'null');
+        if(!menus){
+            const d = new Date();
+            const idx = (d.getFullYear()*100 + d.getMonth()+1 + d.getDate()) % mealPlans.length;
+            menus = mealPlans[idx];
+            localStorage.setItem(todayMenusKey(), JSON.stringify(menus));
+        }
+        if(document.getElementById('breakfastMenu')) document.getElementById('breakfastMenu').textContent = menus.breakfast;
+        if(document.getElementById('lunchMenu')) document.getElementById('lunchMenu').textContent = menus.lunch;
+        if(document.getElementById('dinnerMenu')) document.getElementById('dinnerMenu').textContent = menus.dinner;
+    }
     loadMenusForToday();
-    buildDailySchedule();
+
+    /* midnight rotation (menus + exercises) */
+    function midnightWatch(){
+        const now = new Date(); const next = new Date(now); next.setHours(24,0,0,0);
+        const ms = next - now + 1000;
+        setTimeout(()=>{
+            const d = new Date();
+            const idx = (d.getFullYear()*100 + d.getMonth()+1 + d.getDate()) % mealPlans.length;
+            const newMenus = mealPlans[idx];
+            localStorage.setItem(todayMenusKey(), JSON.stringify(newMenus));
+            const exIdx = (d.getFullYear()*100 + d.getMonth()+1 + d.getDate()) % defaultExercises.length;
+            const newExercises = [
+                defaultExercises[exIdx],
+                defaultExercises[(exIdx + 1) % defaultExercises.length],
+                defaultExercises[(exIdx + 2) % defaultExercises.length]
+            ];
+            localStorage.setItem('todayExercises', JSON.stringify(newExercises));
+            loadMenusForToday();
+            buildDailySchedule();
+            midnightWatch();
+        }, ms);
+    }
     midnightWatch();
-  }, ms);
-}
-midnightWatch();
 
-/* =========================
-   Streak calculations
-   ========================= */
-function getStreakState(){ return loadJSON('streakState', { streak:0, lastDate:null }); }
-function saveStreakState(obj){ saveJSON('streakState', obj); }
-function getRestoreTokensForMonth(){ const d=new Date(); const key=`streakRestoreTokens-${d.getFullYear()}-${pad(d.getMonth()+1)}`; let v = parseInt(localStorage.getItem(key)||'3'); if(isNaN(v)) v=3; return { key, v }; }
-function consumeRestoreToken(){ const obj=getRestoreTokensForMonth(); if(obj.v<=0) return false; localStorage.setItem(obj.key, String(obj.v-1)); document.getElementById('streakRestore') && (document.getElementById('streakRestore').textContent = String(obj.v-1)); return true; }
-function checkAndUpdateStreak(){
-  const today = isoKey();
-  const daily = loadDailySummary()[today] || {};
-  const prayers = ['Fajr','Dhuhr','Asr','Maghrib','Isha'].every(p => daily.prayerDone && daily.prayerDone[p]);
-  const murajaahOK = !!daily.murajaahDone && Object.keys(daily.murajaahDone).length >= 3;
-  const ecoOK = challengesTemplate.every(c => (JSON.parse(localStorage.getItem('chDone')||'{}'))[c.id]);
-  const exercises = JSON.parse(localStorage.getItem('todayExercises') || 'null') || defaultExercises;
-  const exercisesOK = exercises.every(ex => daily.exerciseDone && daily.exerciseDone[ex.name]);
-  const meals = ['Breakfast','Lunch','Dinner'].every(k => {
-    const mealsObj = daily.meals || {};
-    return (mealsObj[`meal-${k.toLowerCase()}`] || mealsObj[k] || mealsObj[k.toLowerCase()]);
-  });
-  const allGood = prayers && murajaahOK && ecoOK && exercisesOK && meals;
-  const state = getStreakState();
-  if(allGood && state.lastDate !== today){
-    state.streak = (state.streak || 0) + 1;
-    state.lastDate = today;
-    saveStreakState(state);
-    document.getElementById('streakCount') && (document.getElementById('streakCount').textContent = state.streak);
-    speak(`Streak increased. Congratulations!`, 'en-US');
-  } else {
-    document.getElementById('streakCount') && (document.getElementById('streakCount').textContent = state.streak || 0);
-  }
-}
-setInterval(()=>{ checkAndUpdateStreak(); }, 60*1000);
+    /* =========================
+       Streak & helpers
+       ========================= */
+    function getStreakState(){
+        const s = loadJSON('streakState', { streak:0, lastDate:null });
+        return s;
+    }
+    function saveStreakState(obj){ saveJSON('streakState', obj); }
+    function getRestoreTokensForMonth(){
+        const d = new Date(); const key = `streakRestoreTokens-${d.getFullYear()}-${pad(d.getMonth()+1)}`;
+        let v = parseInt(localStorage.getItem(key)||'3');
+        if(isNaN(v)) v = 3;
+        return { key, v };
+    }
+    function consumeRestoreToken(){
+        const obj = getRestoreTokensForMonth();
+        if(obj.v <= 0) return false;
+        localStorage.setItem(obj.key, String(obj.v-1));
+        document.getElementById('streakRestore').textContent = String(obj.v-1);
+        return true;
+    }
+    function checkAndUpdateStreak(){
+        const today = isoKey();
+        const daily = loadDailySummary()[today] || {};
+        const prayers = ['Fajr','Dhuhr','Asr','Maghrib','Isha'].every(p => daily.prayerDone && daily.prayerDone[p]);
+        const murajaahOK = !!daily.murajaahDone && Object.keys(daily.murajaahDone).length >= 3;
+        const ecoOK = challengesTemplate.every(c => (JSON.parse(localStorage.getItem('chDone')||'{}'))[c.id]);
+        const exercises = JSON.parse(localStorage.getItem('todayExercises') || 'null') || defaultExercises;
+        const exercisesOK = exercises.every(ex => daily.exerciseDone && daily.exerciseDone[ex.name]);
+        const meals = ['Breakfast','Lunch','Dinner'].every(k => {
+            const mealsObj = daily.meals || {};
+            return (mealsObj[`meal-${k.toLowerCase()}`] || mealsObj[k] || mealsObj[k.toLowerCase()]);
+        });
+        const allGood = prayers && murajaahOK && ecoOK && exercisesOK && meals;
+        const state = getStreakState();
+        if(allGood && state.lastDate !== today){
+            state.streak = (state.streak || 0) + 1;
+            state.lastDate = today;
+            saveStreakState(state);
+            document.getElementById('streakCount').textContent = state.streak;
+            speak(`Streak increased. Congratulations!`, 'en-US');
+        } else {
+            document.getElementById('streakCount').textContent = state.streak || 0;
+        }
+    }
+    setInterval(()=>{ checkAndUpdateStreak(); }, 60*1000);
+    document.getElementById('streakRestore').textContent = getRestoreTokensForMonth().v;
 
-/* =========================
-   Location init + fetch prayers
-   ========================= */
-let userCoords = null;
-function initMapOnUser(lat, lon){
-  try { if(!map) initMap(); map.setView([lat, lon], 13); L.marker([lat, lon]).addTo(map); } catch(e){ console.warn(e); }
-}
-function initLocationAndPrayer(){
-  if(!navigator.geolocation){
-    document.getElementById('locationDisplay').textContent = 'Geolocation not supported. Using Jakarta fallback.';
-    userCoords = { lat:-6.2088, lon:106.8456 };
-    initMapOnUser(userCoords.lat, userCoords.lon);
-    fetchPrayerTimes(userCoords.lat, userCoords.lon);
-    return;
-  }
-  navigator.geolocation.getCurrentPosition(pos=>{
-    userCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-    document.getElementById('locationDisplay').textContent = `Location: ${userCoords.lat.toFixed(4)}, ${userCoords.lon.toFixed(4)}`;
-    initMapOnUser(userCoords.lat, userCoords.lon);
-    fetchPrayerTimes(userCoords.lat, userCoords.lon);
-  }, err=>{
-    console.warn('Location denied', err);
-    document.getElementById('locationDisplay').textContent = 'Location denied. Using Jakarta fallback.';
-    userCoords = { lat:-6.2088, lon:106.8456 };
-    initMapOnUser(userCoords.lat, userCoords.lon);
-    fetchPrayerTimes(userCoords.lat, userCoords.lon);
-  }, { enableHighAccuracy:true, timeout:8000 });
-}
-initLocationAndPrayer();
+    /* =========================
+       Location init + Prayer fetch
+       ========================= */
+    function initMapOnUser(lat, lon){
+        try {
+            if(!map) initMap();
+            map.setView([lat, lon], 13);
+            L.marker([lat, lon]).addTo(map);
+        } catch(e){ console.warn(e); }
+    }
+    let userCoords = null;
 
-/* =========================
-   Initial UI build
-   ========================= */
-setTimeout(()=>{
-  buildDailySchedule();
-  updateCountdownsAndTriggers();
-  renderRunsList();
-  renderTrash();
-  renderChallenges();
-  renderExerciseList();
-  attachPrayerListeners();
-}, 1400);
+    function initLocationAndPrayer(){
+        if(!navigator.geolocation){
+            document.getElementById('locationDisplay').textContent = 'Geolocation not supported. Using Jakarta fallback.';
+            userCoords = { lat:-6.2088, lon:106.8456 };
+            fetchPrayerTimes(userCoords.lat, userCoords.lon);
+            initMapOnUser(userCoords.lat, userCoords.lon);
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(pos=>{
+            userCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+            document.getElementById('locationDisplay').textContent = `Location: ${userCoords.lat.toFixed(4)}, ${userCoords.lon.toFixed(4)}`;
+            initMapOnUser(userCoords.lat, userCoords.lon);
+            fetchPrayerTimes(userCoords.lat, userCoords.lon);
+        }, err=>{
+            console.warn('Location denied', err);
+            document.getElementById('locationDisplay').textContent = 'Location denied. Using Jakarta fallback.';
+            userCoords = { lat:-6.2088, lon:106.8456 };
+            initMapOnUser(userCoords.lat, userCoords.lon);
+            fetchPrayerTimes(userCoords.lat, userCoords.lon);
+        }, { enableHighAccuracy:true, timeout:8000 });
+    }
+    initLocationAndPrayer();
 
-/* Service Worker */
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('service-worker.js')
-    .then(()=> console.log('Service Worker registered'))
-    .catch(err=> console.warn('SW failed', err));
-}
+    /* =========================
+       Init UI once
+       ========================= */
+    function updateTime(){
+        const now = new Date();
+        document.getElementById('currentTime').textContent = now.toLocaleTimeString();
+    }
+    setInterval(updateTime, 1000);
 
-// ... kode JavaScript Anda lainnya ...
+    setTimeout(()=>{
+        buildDailySchedule();
+        updateCountdownsAndTriggers();
+        renderRunsList();
+        renderTrash();
+        renderChallenges();
+        renderExerciseList();
+        updateTime();
+        checkAndUpdateStreak();
+    }, 1400);
 
-</script>
-
+    /* =========================
+       Service worker (PWA)
+       ========================= */
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js')
+            .then(()=> console.log('Service Worker registered'))
+            .catch(err=> console.warn('SW failed', err));
+    }
+    </script>
 </body>
 </html>
